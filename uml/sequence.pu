@@ -1,0 +1,53 @@
+@startuml blackjack
+
+participant Main          as Main
+participant BlackjackGame as Game
+actor       Player        as P
+actor       Dealer        as D
+participant Deck          as Deck
+participant Card          as Card
+
+Main -> Game : ゲームを開始する
+activate Game
+
+Game -> Deck : 初期化
+Game -> D : 初期化
+Game -> P : 初期化
+
+Deck -> Card : カード52枚をシャッフル
+activate Card
+Card -> Deck : シャッフルしたカード
+deactivate Card
+
+Game -> P : プレイヤー手札を取得
+activate P
+P -> Deck : カードを2枚とる
+activate Deck
+Deck --> P : カードを2枚返す
+deactivate Deck
+P --> Game : プレイヤー手札
+deactivate P
+
+
+Game -> D : ディーラー手札を取得
+activate D
+D -> Deck : カードを2枚とる
+activate Deck
+Deck  --> D : カードを2枚返す
+deactivate Deck
+D --> Game : ディーラー手札
+deactivate D
+
+Game -> Game : メッセージを返す
+deactivate Game
+
+note over Game
+ブラックジャックを開始します。
+あなたの引いたカードはハートの7です。
+あなたの引いたカードはクラブの8です。
+ディーラーの引いたカードはダイヤのQです。
+ディーラーの引いた2枚目のカードはわかりません。
+あなたの現在の得点は15です。カードを引きますか？（Y/N）
+end note
+
+@enduml

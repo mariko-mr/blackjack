@@ -1,0 +1,41 @@
+@startuml blackjack
+
+left to right direction
+
+actor "プレイヤー" as user1
+actor "ディーラー" as user2
+
+rectangle ブラックジャックゲーム {
+  usecase "ゲームをスタートする" as UC1
+  usecase "デッキからカードを2枚引く" as UC2
+  usecase "勝敗を判定する" as UC3
+  usecase "ゲームを終了する" as UC4
+}
+
+rectangle カードの追加(プレイヤー) {
+  usecase "カードを追加" as UC_player_card1
+  usecase "スタンド" as UC_player_card2
+  usecase "合計値が21を超えたら負け" as UC_player_card3
+}
+
+rectangle カードの追加(ディーラー) {
+  usecase "合計値が17を超えるまでカードを追加" as UC_dealer_card1
+  usecase "合計値が21を超えたら負け" as UC_dealer_card2
+}
+
+user1 --> UC1
+user1 --> UC2
+user1 --> UC3
+user1 --> UC4
+UC_player_card1 <-- user1
+UC_player_card2 <-- user1
+UC_player_card3 <-- user1
+
+UC1 <-- user2
+UC2 <-- user2
+UC3 <-- user2
+UC4 <-- user2
+user2 --> UC_dealer_card1
+user2 --> UC_dealer_card2
+
+@enduml

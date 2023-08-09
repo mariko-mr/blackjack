@@ -1,0 +1,31 @@
+@startuml blackjack
+
+BlackjackGame -- Acter
+BlackjackGame -- Deck
+Acter <|.. Player
+Acter <|.. Dealer
+Player -- Deck
+Dealer -- Deck
+Deck -- Card
+
+skinparam classAttributeIconSize 0
+
+class BlackjackGame {
+}
+
+interface Acter {
+}
+
+class Player {
+}
+
+class Dealer {
+}
+
+class Deck {
+}
+
+class Card {
+}
+
+@enduml
