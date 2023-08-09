@@ -1,31 +1,40 @@
 @startuml blackjack
 
-BlackjackGame -- Acter
+BlackjackGame -- Player
+BlackjackGame -- Dealer
 BlackjackGame -- Deck
-Acter <|.. Player
-Acter <|.. Dealer
 Player -- Deck
 Dealer -- Deck
-Deck -- Card
+Deck *-- Card
 
 skinparam classAttributeIconSize 0
 
 class BlackjackGame {
-}
-
-interface Acter {
+    +startGame(): void
+    -getMessage(): string
 }
 
 class Player {
+    +init(): void
+    +drawCards(Deck $deck): array
 }
 
 class Dealer {
+    +init(): void
+    +drawCards(Deck $deck): array
 }
 
 class Deck {
+    -array cards
+    +createNewDeck(): array
+    +drawCards(): array
 }
 
 class Card {
+    -string suit
+    -int number
+    +getSuit(): string
+    +getNumber(): string
 }
 
 @enduml

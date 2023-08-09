@@ -10,14 +10,23 @@ participant Card          as Card
 Main -> Game : ゲームを開始する
 activate Game
 
-Game -> Deck : 初期化
-Game -> D : 初期化
-Game -> P : 初期化
-
+Game -> Deck : カードをシャッフルする
+activate Deck
 Deck -> Card : カード52枚をシャッフル
 activate Card
 Card -> Deck : シャッフルしたカード
 deactivate Card
+deactivate Deck
+
+Game -> D : 初期化
+activate D
+D -> D : 初期化
+deactivate D
+
+Game -> P : 初期化
+activate P
+P -> P : 初期化
+deactivate P
 
 Game -> P : プレイヤー手札を取得
 activate P
