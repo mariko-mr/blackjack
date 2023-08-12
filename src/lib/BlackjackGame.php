@@ -38,6 +38,6 @@ class BlackjackGame
         echo 'ディーラーの引いた2枚目のカードはわかりません。' . PHP_EOL;
 
         // 合計点
-        echo 'あなたの現在の得点は' . $this->player->calTotalScore() . 'です。カードを引きますか？（Y/N）' . PHP_EOL;
+        echo 'あなたの現在の得点は' . $this->player->calTotalScore($playerCards) . 'です。カードを引きますか？（Y/N）' . PHP_EOL;
     }
 }

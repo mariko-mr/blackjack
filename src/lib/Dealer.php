@@ -19,6 +19,11 @@ class Dealer
 
         return $this->dealerCards;
     }
+
+    public function calTotalScore(): int
+    {
+        return 15;
+    }
 }
 
 /*
