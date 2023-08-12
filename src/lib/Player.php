@@ -20,9 +20,15 @@ class Player
         return $this->playerCards;
     }
 
-    public function calTotalScore(): int
+    public function calTotalScore(array $playerCards): int
     {
-        return 15;
+        $totalScore = 0;
+
+        foreach ($playerCards as $playerCard) {
+            $totalScore += $playerCard->getScore();
+        }
+
+        return $totalScore;
     }
 }
 

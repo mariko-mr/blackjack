@@ -4,7 +4,7 @@ namespace Blackjack;
 
 class Card
 {
-    public function __construct(private string $suit, private string $number)
+    public function __construct(private string $suit, private string $number, private int $score)
     {
     }
 
@@ -16,5 +16,13 @@ class Card
     public function getNumber(): string
     {
         return $this->number;
+    }
+
+    /**
+     * ここを追加
+     */
+    public function getScore(): int
+    {
+        return $this->score;
     }
 }
