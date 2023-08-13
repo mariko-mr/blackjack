@@ -24,10 +24,6 @@ class Deck
     ];
     private array $cards;
 
-    /**
-     * ここを修正
-     * $scoreを追加
-     */
     public function __construct()
     {
         // 52枚のカードを作りシャッフルする

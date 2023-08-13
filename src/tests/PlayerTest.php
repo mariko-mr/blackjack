@@ -23,9 +23,6 @@ final class PlayerTest extends TestCase
         $this->assertIsArray($cards);
     }
 
-    /**
-     * ここを追加
-     */
     public function testCalTotalScore(): void
     {
         $playerCards = [new Card('ハート', 'J', 10), new Card('ハート', 'A', 1)];

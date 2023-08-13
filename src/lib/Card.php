@@ -18,9 +18,6 @@ class Card
         return $this->number;
     }
 
-    /**
-     * ここを追加
-     */
     public function getScore(): int
     {
         return $this->score;
