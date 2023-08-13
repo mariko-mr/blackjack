@@ -7,19 +7,30 @@ namespace Blackjack\Tests;
 use PHPUnit\Framework\TestCase;
 use Blackjack\Dealer;
 use Blackjack\Deck;
-use Blackjack\Card;
 
 require_once(__DIR__ . '/../lib/Dealer.php');
 require_once(__DIR__ . '/../lib/Deck.php');
-require_once(__DIR__ . '/../lib/Card.php');
 
 final class DealerTest extends TestCase
 {
-    public function testDrawCardsReturnArray(): void
+    public function testDrawCards(): void
     {
-        $deck = new Deck();
         $dealer = new Dealer();
-        $cards = $dealer->drawCards($deck, 2);
-        $this->assertIsArray($cards);
+        $deck = new Deck();
+        $dealerCards = [];
+
+        // 2枚引いた場合
+        $dealerCards = $dealer->drawCards($deck, 2);
+        $this->assertSame(2, count($dealerCards));
+
+        // もう1枚引いた場合
+        $dealerCards = $dealer->drawCards($deck, 1);
+        $this->assertSame(3, count($dealerCards));
+    }
+
+    public function testGetTotalScore(): void
+    {
+        $dealer = new Dealer();
+        $this->assertSame(0, $dealer->getTotalScore());
     }
 }

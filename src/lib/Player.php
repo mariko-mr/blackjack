@@ -16,12 +16,12 @@ class Player
 
     public function drawCards(Deck $deck, int $drawNum): array
     {
-        // カードを引く
+        // 引いたカードを持ち札に加える
         $drawnCards = $deck->drawCards($drawNum);
         $this->playerCards = array_merge($this->playerCards, $drawnCards);
 
         // 合計点を更新する
-        $this->playerTotalScore = $this->calTotalScore($drawnCards);
+        $this->playerTotalScore = $this->updateTotalScore($drawnCards);
 
         return $this->playerCards;
     }
@@ -31,7 +31,7 @@ class Player
         return $this->playerTotalScore;
     }
 
-    private function calTotalScore(array $drawnCards): int
+    private function updateTotalScore(array $drawnCards): int
     {
         foreach ($drawnCards as $drawnCard) {
             $this->playerTotalScore += $drawnCard->getScore();

@@ -41,7 +41,7 @@ class BlackjackGame
             $this->showDealerDrawnMessage($dealerCards);
         }
 
-        // 判定して終了する。
+        // 判定して終了する
         $this->showJudgementMessage($playerCards, $dealerCards);
     }
 
@@ -51,39 +51,56 @@ class BlackjackGame
 
         // プレイヤーのカードを表示
         foreach ($playerCards as $card) {
-            echo 'あなたの引いたカードは' . $card->getSuit() . 'の' . $card->getNumber() . 'です。' . PHP_EOL;
+            echo 'あなたの引いたカードは' .
+                $card->getSuit() . 'の' .
+                $card->getNumber() . 'です。' . PHP_EOL;
         }
 
         // ディーラーのカードを表示
-        echo 'ディーラーの引いたカードは' . $dealerCards[0]->getSuit() . 'の' . $dealerCards[0]->getNumber() . 'です。' . PHP_EOL;
+        echo 'ディーラーの引いたカードは' .
+            $dealerCards[0]->getSuit() . 'の' .
+            $dealerCards[0]->getNumber() . 'です。' . PHP_EOL;
         echo 'ディーラーの引いた2枚目のカードはわかりません。' . PHP_EOL . PHP_EOL;
 
         // プレイヤーの合計点
-        echo 'あなたの現在の得点は' . $this->player->getTotalScore($playerCards) . 'です。カードを引きますか？（y/N）' . PHP_EOL;
+        echo 'あなたの現在の得点は' .
+            $this->player->getTotalScore($playerCards) .
+            'です。カードを引きますか？（y/N）' . PHP_EOL;
     }
 
     private function showPlayerMessage($playerCards, &$stdin)
     {
-        echo 'あなたの引いたカードは' . $playerCards[array_key_last($playerCards)]->getSuit() . 'の' . $playerCards[array_key_last($playerCards)]->getNumber() . 'です。' . PHP_EOL;
+        echo 'あなたの引いたカードは' .
+            $playerCards[array_key_last($playerCards)]->getSuit() . 'の' .
+            $playerCards[array_key_last($playerCards)]->getNumber() . 'です。' . PHP_EOL;
 
-        if ($this->player->getTotalScore($playerCards) <= 21) { // カードを引いた合計が21以内の場合
-            echo 'あなたの現在の得点は' . $this->player->getTotalScore($playerCards) . 'です。カードを引きますか？（y/N）' . PHP_EOL;
+        if ($this->player->getTotalScore($playerCards) <= 21) { // 合計が21以内の場合
+            echo 'あなたの現在の得点は' .
+                $this->player->getTotalScore($playerCards) .
+                'です。カードを引きますか？（y/N）' . PHP_EOL;
             $stdin = trim(fgets(STDIN));
         } elseif ($this->player->getTotalScore($playerCards) > 21) { // 合計が21を超えたら終了
-            echo 'あなたの現在の得点は' . $this->player->getTotalScore($playerCards) . 'です。残念！あなたの負けです。' . PHP_EOL;
+            echo 'あなたの現在の得点は' .
+                $this->player->getTotalScore($playerCards) .
+                'です。残念！あなたの負けです。' . PHP_EOL;
             exit;
         }
     }
 
     private function showDealerMessage($dealerCards)
     {
-        echo 'ディーラーの引いた2枚目のカードは' . $dealerCards[1]->getSuit() . 'の' . $dealerCards[1]->getNumber() . 'でした。' . PHP_EOL;
-        echo 'ディーラーの現在の得点は' . $this->dealer->getTotalScore($dealerCards) . 'です。' . PHP_EOL . PHP_EOL;
+        echo 'ディーラーの引いた2枚目のカードは' .
+            $dealerCards[1]->getSuit() . 'の' .
+            $dealerCards[1]->getNumber() . 'でした。' . PHP_EOL;
+        echo 'ディーラーの現在の得点は' .
+            $this->dealer->getTotalScore($dealerCards) . 'です。' . PHP_EOL . PHP_EOL;
     }
 
     private function showDealerDrawnMessage($dealerCards)
     {
-        echo 'ディーラーの引いたカードは' . $dealerCards[array_key_last($dealerCards)]->getSuit() . 'の' . $dealerCards[array_key_last($dealerCards)]->getNumber() . 'です。' . PHP_EOL;
+        echo 'ディーラーの引いたカードは' .
+            $dealerCards[array_key_last($dealerCards)]->getSuit() . 'の' .
+            $dealerCards[array_key_last($dealerCards)]->getNumber() . 'です。' . PHP_EOL;
     }
 
     private function showJudgementMessage($playerCards, $dealerCards)
@@ -91,8 +108,10 @@ class BlackjackGame
         echo '判定に移ります。' . PHP_EOL . PHP_EOL;
 
         echo '----- 判定結果 -----' . PHP_EOL;
-        echo 'あなたの得点は' . $this->player->getTotalScore($playerCards) . 'です。' . PHP_EOL;
-        echo 'ディーラーの得点は' . $this->dealer->getTotalScore($dealerCards) . 'です。' . PHP_EOL . PHP_EOL;
+        echo 'あなたの得点は' .
+            $this->player->getTotalScore($playerCards) . 'です。' . PHP_EOL;
+        echo 'ディーラーの得点は' .
+            $this->dealer->getTotalScore($dealerCards) . 'です。' . PHP_EOL . PHP_EOL;
 
         // 判定
         if ($this->dealer->getTotalScore($dealerCards) > 21) {

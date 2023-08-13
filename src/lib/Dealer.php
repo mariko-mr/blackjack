@@ -16,28 +16,22 @@ class Dealer
 
     public function drawCards(Deck $deck, int $drawNum): array
     {
-        // カードを引く
+        // 引いたカードを持ち札に加える
         $drawnCards = $deck->drawCards($drawNum);
         $this->dealerCards = array_merge($this->dealerCards, $drawnCards);
 
         // 合計点を更新する
-        $this->dealerTotalScore = $this->calTotalScore($drawnCards);
+        $this->dealerTotalScore = $this->updateTotalScore($drawnCards);
 
         return $this->dealerCards;
     }
 
-    /**
-     * ここを追加
-     */
     public function getTotalScore(): int
     {
         return $this->dealerTotalScore;
     }
 
-    /**
-     * ここを追加
-     */
-    private function calTotalScore(array $drawnCards): int
+    private function updateTotalScore(array $drawnCards): int
     {
         foreach ($drawnCards as $drawnCard) {
             $this->dealerTotalScore += $drawnCard->getScore();
