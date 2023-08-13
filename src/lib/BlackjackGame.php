@@ -13,7 +13,7 @@ class BlackjackGame
     {
     }
 
-    public function startGame()
+    public function startGame(): void
     {
         // デッキを新規作成する
         $deck = new Deck();
@@ -23,29 +23,29 @@ class BlackjackGame
         $dealerCards = $this->dealer->drawCards($deck, self::DRAW_TWO);
 
         // スタート時のメッセージを表示
-        $this->showStartMessage($playerCards, $dealerCards);
+        $this->showStartMsg($playerCards, $dealerCards);
         $stdin = trim(fgets(STDIN));
 
         // プレイヤーがカードを引くターン
         while ($stdin === 'y') {
             $playerCards = $this->player->drawCards($deck, self::DRAW_ONE);
-            $this->showPlayerMessage($playerCards, $stdin);
+            $this->showPlayerMsg($playerCards, $stdin);
         }
 
         // ディーラーがカードを引くターン
         // 合計が17以上になるまで引き続ける
-        $this->showDealerMessage($dealerCards);
+        $this->showDealerMsg($dealerCards);
 
         while ($this->dealer->getTotalScore($dealerCards) < 17) {
             $dealerCards = $this->dealer->drawCards($deck, self::DRAW_ONE);
-            $this->showDealerDrawnMessage($dealerCards);
+            $this->showDealerDrawnMsg($dealerCards);
         }
 
         // 判定して終了する
-        $this->showJudgementMessage($playerCards, $dealerCards);
+        $this->showJudgementMsg($playerCards, $dealerCards);
     }
 
-    private function showStartMessage($playerCards, $dealerCards)
+    private function showStartMsg($playerCards, $dealerCards): void
     {
         echo 'ブラックジャックを開始します。' . PHP_EOL . PHP_EOL;
 
@@ -72,7 +72,7 @@ class BlackjackGame
      * ここを修正
      * $playerTotalScoreに置き換え
      */
-    private function showPlayerMessage($playerCards, &$stdin)
+    private function showPlayerMsg($playerCards, &$stdin): void
     {
         $playerLastDrawnCard = $playerCards[array_key_last($playerCards)];
         $playerTotalScore = $this->player->getTotalScore($playerCards);
@@ -95,7 +95,7 @@ class BlackjackGame
         }
     }
 
-    private function showDealerMessage($dealerCards)
+    private function showDealerMsg($dealerCards): void
     {
         echo 'ディーラーの引いた2枚目のカードは' .
             $dealerCards[1]->getSuit() . 'の' .
@@ -104,7 +104,7 @@ class BlackjackGame
             $this->dealer->getTotalScore($dealerCards) . 'です。' . PHP_EOL . PHP_EOL;
     }
 
-    private function showDealerDrawnMessage($dealerCards)
+    private function showDealerDrawnMsg($dealerCards): void
     {
         $dealerLastDrawnCard = $dealerCards[array_key_last($dealerCards)];
 
@@ -119,7 +119,7 @@ class BlackjackGame
      * $playerTotalScoreに置き換え
      * $dealerTotalScoreに置き換え
      */
-    private function showJudgementMessage($playerCards, $dealerCards)
+    private function showJudgementMsg($playerCards, $dealerCards): void
     {
         $playerTotalScore = $this->player->getTotalScore($playerCards);
         $dealerTotalScore = $this->dealer->getTotalScore($dealerCards);
