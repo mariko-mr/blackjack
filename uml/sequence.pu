@@ -7,56 +7,156 @@ actor       Dealer        as D
 participant Deck          as Deck
 participant Card          as Card
 
-Main -> Game : ゲームを開始する
-activate Game
+group ゲームの開始
+    Main -> Game : ゲームを開始する
+    activate Game
 
-Game -> Deck : カードをシャッフルする
-activate Deck
-Deck -> Card : カード52枚をシャッフル
-activate Card
-Card -> Deck : シャッフルしたカード
-deactivate Card
-deactivate Deck
+    Game -> Deck : デッキを新規作成する
+    activate Deck
+    Deck -> Card : カード52枚をシャッフル
+    activate Card
+    Card --> Deck : シャッフルしたカード
+    deactivate Card
+    deactivate Deck
 
-Game -> D : 初期化
-activate D
-D -> D : 初期化
-deactivate D
+    Game -> D : ディーラーを作成
+    activate D
+    D -> D : 初期化
+    deactivate D
 
-Game -> P : 初期化
-activate P
-P -> P : 初期化
-deactivate P
+    Game -> P : プレイヤーを作成
+    activate P
+    P -> P : 初期化
+    deactivate P
 
-Game -> P : プレイヤー手札を取得
-activate P
-P -> Deck : カードを2枚とる
-activate Deck
-Deck --> P : カードを2枚返す
-deactivate Deck
-P --> Game : プレイヤー手札
-deactivate P
+    Game -> P : プレイヤー手札を取得
+    activate P
+    P -> Deck : カードを2枚とる
+    activate Deck
+    Deck --> P : カードを2枚返す
+    deactivate Deck
+    P -> P : 合計点を更新する
+    P --> Game : プレイヤー手札
+    deactivate P
+
+    Game -> D : ディーラー手札を取得
+    activate D
+    D -> Deck : カードを2枚とる
+    activate Deck
+    Deck  --> D : カードを2枚返す
+    deactivate Deck
+    D -> D : 合計点を更新する
+    D --> Game : ディーラー手札
+    deactivate D
+
+    Game -> Game : メッセージを返す
+    deactivate Game
+
+    note right Game
+        ブラックジャックを開始します。
+        あなたの引いたカードはハートの7です。
+        あなたの引いたカードはクラブの8です。
+        ディーラーの引いたカードはダイヤのQです。
+        ディーラーの引いた2枚目のカードはわかりません。
+        あなたの現在の得点は15です。カードを引きますか？（y/N）
+    end note
+end
 
 
-Game -> D : ディーラー手札を取得
-activate D
-D -> Deck : カードを2枚とる
-activate Deck
-Deck  --> D : カードを2枚返す
-deactivate Deck
-D --> Game : ディーラー手札
-deactivate D
+alt プレイヤーのターン
+    loop  while 'y'
+        Game -> P : プレイヤー手札を取得
+        activate P
+        P -> Deck : カードを1枚とる
+        activate Deck
+        Deck --> P : カードを1枚返す
+        deactivate Deck
+        P -> P : 合計点を更新する
+        P --> Game : プレイヤー手札
+        deactivate P
 
-Game -> Game : メッセージを返す
-deactivate Game
+        Game -> Game : メッセージを返す
+        deactivate Game
 
-note over Game
-ブラックジャックを開始します。
-あなたの引いたカードはハートの7です。
-あなたの引いたカードはクラブの8です。
-ディーラーの引いたカードはダイヤのQです。
-ディーラーの引いた2枚目のカードはわかりません。
-あなたの現在の得点は15です。カードを引きますか？（Y/N）
-end note
+        note right Game
+            あなたの引いたカードはスペードの５です。
+        end note
+
+        alt 合計が21以内の場合
+            Game -> Game : メッセージを返す
+            deactivate Game
+            note right Game
+                あなたの現在の得点は20です。カードを引きますか？（y/N）
+            end note
+
+        else 合計が21を超えた場合
+            Game -> Game : メッセージを返す
+            deactivate Game
+            note right Game #FFAAAA
+                あなたの現在の得点は22です。バーストしました。
+                残念！あなたの負けです。
+            end note
+            Game -> Game : ゲームを終了する
+            deactivate Game
+        end
+    end
+
+else ディーラーのターン
+    Game -> Game : メッセージを返す
+    deactivate Game
+    note right Game
+        ディーラーの引いた2枚目のカードはダイヤの9でした。
+        ディーラーの現在の得点は12です。
+    end note
+
+    loop while 合計17以上になるまで
+        Game -> D : ディーラー手札を取得
+        activate D
+        D -> Deck : カードを1枚とる
+        activate Deck
+        Deck  --> D : カードを1枚返す
+        deactivate Deck
+        D -> D : 合計点を更新する
+        D --> Game : ディーラー手札
+        deactivate D
+
+        Game -> Game : メッセージを返す
+        deactivate Game
+
+        note right Game
+            ディーラーがカードを引きます。
+            ディーラーの引いたカードはクラブの2です。
+        end note
+    end
+end
+
+group 勝敗判定
+    Game -> Game : メッセージを返す
+    deactivate Game
+
+    note right Game
+        〇判定結果〇
+        あなたの得点は14です。
+        ディーラーの得点は18です。
+    end note
+
+    alt
+        note right Game
+            あなたの勝ちです！
+        end note
+    else
+        note right Game
+            同点でした。この勝負は引き分けとします。
+        end note
+    else
+        note right Game
+            ディーラーの勝ちです。残念！
+        end note
+    end
+
+    note right Game #FFAAAA
+        ブラックジャックを終了します。
+    end note
+end
 
 @enduml
