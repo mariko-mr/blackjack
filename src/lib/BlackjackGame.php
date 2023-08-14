@@ -34,15 +34,20 @@ class BlackjackGame
 
         // ディーラーがカードを引くターン
         // 合計が17以上になるまで引き続ける
-        $this->showDealerMsg($dealerCards);
+        if ($stdin === 'N') {
+            $this->showDealerMsg($dealerCards);
 
-        while ($this->dealer->getTotalScore($dealerCards) < 17) {
-            $dealerCards = $this->dealer->drawCards($deck, self::DRAW_ONE);
-            $this->showDealerDrawnMsg($dealerCards);
+            while ($this->dealer->getTotalScore($dealerCards) < 17) {
+                $dealerCards = $this->dealer->drawCards($deck, self::DRAW_ONE);
+                $this->showDealerDrawnMsg($dealerCards);
+            }
+
+            // 判定して終了する
+            $this->showJudgementMsg($playerCards, $dealerCards);
         }
 
-        // 判定して終了する
-        $this->showJudgementMsg($playerCards, $dealerCards);
+        echo 'y/N を入力してください。';
+        exit;
     }
 
     private function showStartMsg($playerCards, $dealerCards): void
