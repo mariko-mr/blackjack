@@ -4,6 +4,6 @@ parameters:
 		- .
 	excludePaths:
 		- vendor
-        - tests
+		- tests
 	fileExtensions:
 		- php
