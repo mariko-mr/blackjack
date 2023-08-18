@@ -2,8 +2,6 @@
 
 namespace Blackjack;
 
-use Exception;
-
 require_once __DIR__ . ('/Deck.php');
 
 class BlackjackGame
@@ -183,9 +181,9 @@ class BlackjackGame
 
         if ($playerTotalScore > $dealerTotalScore) {
             echo 'あなたの勝ちです！' . PHP_EOL . PHP_EOL;
+        } elseif ($playerTotalScore < $dealerTotalScore) {
+            'ディーラーの勝ちです。残念！' . PHP_EOL . PHP_EOL;
         }
-        echo 'ディーラーの勝ちです。残念！' . PHP_EOL . PHP_EOL;
-
 
         // ゲームを終了する
         echo 'ブラックジャックを終了します。' . PHP_EOL;
