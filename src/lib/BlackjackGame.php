@@ -2,6 +2,8 @@
 
 namespace Blackjack;
 
+use Exception;
+
 require_once __DIR__ . ('/Deck.php');
 
 class BlackjackGame
@@ -29,6 +31,12 @@ class BlackjackGame
         $this->showStartMsg($playerCards, $dealerCards);
         $stdin = trim(fgets(STDIN));
 
+        // 例外エラー表示
+        while ($stdin !== 'y' && $stdin !== 'N') {
+            echo 'yまたはNを入力してください。';
+            $stdin = trim(fgets(STDIN));
+        }
+
         // プレイヤーがカードを引くターン
         while ($stdin === 'y') {
             $playerCards = $this->player->drawCards($deck, self::DRAW_ONE);
@@ -48,9 +56,6 @@ class BlackjackGame
             // 判定して終了する
             $this->showJudgementMsg();
         }
-
-        echo 'y/N を入力してください。';
-        exit;
     }
 
     /**
@@ -101,7 +106,12 @@ class BlackjackGame
                 $playerTotalScore .
                 'です。カードを引きますか？（y/N）' . PHP_EOL;
             $stdin = trim(fgets(STDIN));
-        } else { // 合計が21を超えたら終了
+
+            while ($stdin !== 'y' && $stdin !== 'N') {
+                echo 'yまたはNを入力してください。';
+                $stdin = trim(fgets(STDIN));
+            }
+        } elseif ($playerTotalScore > 21) { // 合計が21を超えたら終了
             echo 'あなたの現在の得点は' .
                 $playerTotalScore .
                 'です。バーストしました。' . PHP_EOL . PHP_EOL .
@@ -173,9 +183,9 @@ class BlackjackGame
 
         if ($playerTotalScore > $dealerTotalScore) {
             echo 'あなたの勝ちです！' . PHP_EOL . PHP_EOL;
-        } else {
-            echo 'ディーラーの勝ちです。残念！' . PHP_EOL . PHP_EOL;
         }
+        echo 'ディーラーの勝ちです。残念！' . PHP_EOL . PHP_EOL;
+
 
         // ゲームを終了する
         echo 'ブラックジャックを終了します。' . PHP_EOL;
