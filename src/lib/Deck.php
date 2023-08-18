@@ -22,6 +22,10 @@ class Deck
         ['num' => 'Q',  'score' => 10],
         ['num' => 'K',  'score' => 10],
     ];
+
+    /**
+     * @var Card[] $cards
+     */
     private array $cards;
 
     public function __construct()
@@ -36,6 +40,10 @@ class Deck
         shuffle($this->cards);
     }
 
+    /**
+     * @param int $drawNum
+     * @return Card[]
+     */
     public function drawCards(int $drawNum): array
     {
         // カードを引いたら配列から要素を削除する

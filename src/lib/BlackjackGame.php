@@ -13,7 +13,10 @@ class BlackjackGame
     {
     }
 
-    public function startGame()
+    /**
+     * ブラックジャックゲームを開始
+     */
+    public function startGame(): void
     {
         // デッキを新規作成する
         $deck = new Deck();
@@ -23,29 +26,43 @@ class BlackjackGame
         $dealerCards = $this->dealer->drawCards($deck, self::DRAW_TWO);
 
         // スタート時のメッセージを表示
-        $this->showStartMessage($playerCards, $dealerCards);
+        $this->showStartMsg($playerCards, $dealerCards);
         $stdin = trim(fgets(STDIN));
+
+        // 例外エラー表示
+        while ($stdin !== 'y' && $stdin !== 'N') {
+            echo 'yまたはNを入力してください。';
+            $stdin = trim(fgets(STDIN));
+        }
 
         // プレイヤーがカードを引くターン
         while ($stdin === 'y') {
             $playerCards = $this->player->drawCards($deck, self::DRAW_ONE);
-            $this->showPlayerMessage($playerCards, $stdin);
+            $this->showPlayerMsg($playerCards, $stdin);
         }
 
         // ディーラーがカードを引くターン
         // 合計が17以上になるまで引き続ける
-        $this->showDealerMessage($dealerCards);
+        if ($stdin === 'N') {
+            $this->showDealerMsg($dealerCards);
 
-        while ($this->dealer->getTotalScore($dealerCards) < 17) {
-            $dealerCards = $this->dealer->drawCards($deck, self::DRAW_ONE);
-            $this->showDealerDrawnMessage($dealerCards);
+            while ($this->dealer->getTotalScore() < 17) {
+                $dealerCards = $this->dealer->drawCards($deck, self::DRAW_ONE);
+                $this->showDealerDrawnMsg($dealerCards);
+            }
+
+            // 判定して終了する
+            $this->showJudgementMsg();
         }
-
-        // 判定して終了する
-        $this->showJudgementMessage($playerCards, $dealerCards);
     }
 
-    private function showStartMessage($playerCards, $dealerCards)
+    /**
+     * 開始時のメッセージを表示
+     *
+     * @param Card[] $playerCards
+     * @param Card[] $dealerCards
+     */
+    private function showStartMsg(array $playerCards, array $dealerCards): void
     {
         echo 'ブラックジャックを開始します。' . PHP_EOL . PHP_EOL;
 
@@ -64,74 +81,111 @@ class BlackjackGame
 
         // プレイヤーの合計点
         echo 'あなたの現在の得点は' .
-            $this->player->getTotalScore($playerCards) .
+            $this->player->getTotalScore() .
             'です。カードを引きますか？（y/N）' . PHP_EOL;
     }
 
-    private function showPlayerMessage($playerCards, &$stdin)
+    /**
+     * プレイヤーターンのメッセージを表示
+     *
+     * @param Card[] $playerCards
+     */
+    private function showPlayerMsg(array $playerCards, string &$stdin): void
     {
-        echo 'あなたの引いたカードは' .
-            $playerCards[array_key_last($playerCards)]->getSuit() . 'の' .
-            $playerCards[array_key_last($playerCards)]->getNumber() . 'です。' . PHP_EOL;
+        $playerLastDrawnCard = $playerCards[array_key_last($playerCards)];
+        $playerTotalScore = $this->player->getTotalScore();
 
-        if ($this->player->getTotalScore($playerCards) <= 21) { // 合計が21以内の場合
+        echo 'あなたの引いたカードは' .
+            $playerLastDrawnCard->getSuit() . 'の' .
+            $playerLastDrawnCard->getNumber() . 'です。' . PHP_EOL;
+
+        if ($playerTotalScore <= 21) { // 合計が21以内の場合は続行
             echo 'あなたの現在の得点は' .
-                $this->player->getTotalScore($playerCards) .
+                $playerTotalScore .
                 'です。カードを引きますか？（y/N）' . PHP_EOL;
             $stdin = trim(fgets(STDIN));
-        } elseif ($this->player->getTotalScore($playerCards) > 21) { // 合計が21を超えたら終了
+
+            while ($stdin !== 'y' && $stdin !== 'N') {
+                echo 'yまたはNを入力してください。';
+                $stdin = trim(fgets(STDIN));
+            }
+        } elseif ($playerTotalScore > 21) { // 合計が21を超えたら終了
             echo 'あなたの現在の得点は' .
-                $this->player->getTotalScore($playerCards) .
-                'です。残念！あなたの負けです。' . PHP_EOL;
+                $playerTotalScore .
+                'です。バーストしました。' . PHP_EOL . PHP_EOL .
+                '残念！あなたの負けです。' . PHP_EOL;
             exit;
         }
     }
 
-    private function showDealerMessage($dealerCards)
+    /**
+     * ディーラーターンのメッセージを表示
+     *
+     * @param Card[] $dealerCards
+     */
+    private function showDealerMsg(array $dealerCards): void
     {
         echo 'ディーラーの引いた2枚目のカードは' .
             $dealerCards[1]->getSuit() . 'の' .
             $dealerCards[1]->getNumber() . 'でした。' . PHP_EOL;
         echo 'ディーラーの現在の得点は' .
-            $this->dealer->getTotalScore($dealerCards) . 'です。' . PHP_EOL . PHP_EOL;
+            $this->dealer->getTotalScore() . 'です。' . PHP_EOL . PHP_EOL;
     }
 
-    private function showDealerDrawnMessage($dealerCards)
+    /**
+     * ディーラーがカードを引くメッセージを表示
+     *
+     * @param Card[] $dealerCards
+     */
+    private function showDealerDrawnMsg(array $dealerCards): void
     {
+        $dealerLastDrawnCard = $dealerCards[array_key_last($dealerCards)];
+
+        echo 'ディーラーがカードを引きます。' . PHP_EOL;
         echo 'ディーラーの引いたカードは' .
-            $dealerCards[array_key_last($dealerCards)]->getSuit() . 'の' .
-            $dealerCards[array_key_last($dealerCards)]->getNumber() . 'です。' . PHP_EOL;
+            $dealerLastDrawnCard->getSuit() . 'の' .
+            $dealerLastDrawnCard->getNumber() . 'です。' . PHP_EOL . PHP_EOL;
     }
 
-    private function showJudgementMessage($playerCards, $dealerCards)
+    /**
+     * 判定ッセージを表示
+     *
+     * @return void
+     */
+    private function showJudgementMsg(): void
     {
+        $playerTotalScore = $this->player->getTotalScore();
+        $dealerTotalScore = $this->dealer->getTotalScore();
+
+        // 得点発表
         echo '判定に移ります。' . PHP_EOL . PHP_EOL;
 
         echo '----- 判定結果 -----' . PHP_EOL;
         echo 'あなたの得点は' .
-            $this->player->getTotalScore($playerCards) . 'です。' . PHP_EOL;
+            $playerTotalScore . 'です。' . PHP_EOL;
         echo 'ディーラーの得点は' .
-            $this->dealer->getTotalScore($dealerCards) . 'です。' . PHP_EOL . PHP_EOL;
+            $dealerTotalScore . 'です。' . PHP_EOL . PHP_EOL;
 
-        // 判定
-        if ($this->dealer->getTotalScore($dealerCards) > 21) {
-            echo 'あなたの勝ちです！' . PHP_EOL . PHP_EOL;
+        // 勝敗判定
+        if ($dealerTotalScore > 21) {
+            echo 'ディーラーはバーストしました。あなたの勝ちです！' . PHP_EOL . PHP_EOL;
             echo 'ブラックジャックを終了します。' . PHP_EOL;
             exit;
         }
 
-        if ($this->dealer->getTotalScore($dealerCards) === $this->player->getTotalScore($playerCards)) {
+        if ($dealerTotalScore === $playerTotalScore) {
             echo '同点でした。この勝負は引き分けとします。' . PHP_EOL . PHP_EOL;
             echo 'ブラックジャックを終了します。' . PHP_EOL;
             exit;
         }
 
-        if ($this->player->getTotalScore($playerCards) > $this->dealer->getTotalScore($dealerCards)) {
+        if ($playerTotalScore > $dealerTotalScore) {
             echo 'あなたの勝ちです！' . PHP_EOL . PHP_EOL;
-        } else {
-            echo 'ディーラーの勝ちです。残念！' . PHP_EOL . PHP_EOL;
+        } elseif ($playerTotalScore < $dealerTotalScore) {
+            'ディーラーの勝ちです。残念！' . PHP_EOL . PHP_EOL;
         }
 
+        // ゲームを終了する
         echo 'ブラックジャックを終了します。' . PHP_EOL;
         exit;
     }
@@ -139,33 +193,4 @@ class BlackjackGame
 
 /*
 php lib/Main.php
-
-ブラックジャックを開始します。
-
-あなたの引いたカードはハートの7です。
-あなたの引いたカードはクラブの8です。
-ディーラーの引いたカードはダイヤのQです。
-ディーラーの引いた2枚目のカードはわかりません。
-
-あなたの現在の得点は15です。カードを引きますか？（y/N）
-Y
-あなたの引いたカードはスペードの５です。
-あなたの現在の得点は20です。カードを引きますか？（y/N）
-N
-
-ディーラーの引いた2枚目のカードはダイヤの2でした。
-ディーラーの現在の得点は12です。
-
-(合計17未満の場合)
-ディーラーの引いたカードはハートのKです。
-
-(合計17以上の場合)
-判定に移ります。
-
------ 判定結果 -----
-あなたの得点は20です。
-ディーラーの得点は22です。
-あなたの勝ちです！
-
-ブラックジャックを終了します。
 */
