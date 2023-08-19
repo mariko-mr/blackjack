@@ -3,6 +3,7 @@
 namespace Blackjack;
 
 require_once __DIR__ . ('/Deck.php');
+require_once __DIR__ . ('/HandJudger.php');
 
 class BlackjackGame
 {
@@ -42,18 +43,15 @@ class BlackjackGame
         }
 
         // ディーラーがカードを引くターン
-        // 合計が17以上になるまで引き続ける
         if ($validatedStdin === 'N') {
-            $this->showDealerMsg($dealerCards);
-
-            while ($this->dealer->getTotalScore() < 17) {
-                $dealerCards = $this->dealer->drawCards($deck, self::DRAW_ONE);
-                $this->showDealerDrawnMsg($dealerCards);
-            }
-
-            // 判定して終了する
-            $this->showDown();
+            $this->DealerTurn($deck, $dealerCards);
         }
+
+        // HandJudgerを新規作成する
+        $handJudger = new HandJudger();
+
+        // 判定して終了する
+        $this->showDown($handJudger);
     }
 
     /**
@@ -86,9 +84,9 @@ class BlackjackGame
     }
 
     /**
-     * プレイヤーターンのメッセージを表示
+     * プレイヤーのターン
      *
-     * @param Card[]  $playerCards
+     * @param Card[] $playerCards
      */
     private function playerTurn(Deck $deck): void
     {
@@ -111,6 +109,24 @@ class BlackjackGame
                 'です。バーストしました。' . PHP_EOL . PHP_EOL .
                 '残念！あなたの負けです。' . PHP_EOL;
             exit;
+        }
+    }
+
+    /**
+     * ディーラーのターン
+     *
+     * @param Deck   $deck
+     * @param Card[] $dealerCards
+     */
+    private function DealerTurn(Deck $deck, array $dealerCards): void
+    {
+        // ディーラーターンのメッセージを表示
+        $this->showDealerMsg($dealerCards);
+
+        // 合計が17以上になるまでカードを引き続ける
+        while ($this->dealer->getTotalScore() < 17) {
+            $dealerCards = $this->dealer->drawCards($deck, self::DRAW_ONE);
+            $this->showDealerDrawnMsg($dealerCards);
         }
     }
 
@@ -148,9 +164,10 @@ class BlackjackGame
     /**
      * 判定ッセージを表示
      *
+     * @param HandJudger $handJudger
      * @return void
      */
-    private function showDown(): void
+    private function showDown(HandJudger $handJudger): void
     {
         $playerTotalScore = $this->player->getTotalScore();
         $dealerTotalScore = $this->dealer->getTotalScore();
@@ -164,7 +181,8 @@ class BlackjackGame
             $dealerTotalScore . 'です。' . PHP_EOL . PHP_EOL;
 
         // 勝敗判定
-        // $this->handJudger->determineWinner($playerTotalScore, $dealerTotalScore);
+        $winnerMsg = $handJudger->determineWinner($playerTotalScore, $dealerTotalScore);
+        echo $winnerMsg . PHP_EOL . PHP_EOL;
 
         // ゲームを終了する
         echo 'ブラックジャックを終了します。' . PHP_EOL;
