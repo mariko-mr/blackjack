@@ -44,7 +44,7 @@ class BlackjackGame
 
         // ディーラーがカードを引くターン
         if ($validatedStdin === 'N') {
-            $this->DealerTurn($deck, $dealerCards);
+            $this->dealerTurn($deck, $dealerCards);
         }
 
         // HandJudgerを新規作成する
@@ -118,7 +118,7 @@ class BlackjackGame
      * @param Deck   $deck
      * @param Card[] $dealerCards
      */
-    private function DealerTurn(Deck $deck, array $dealerCards): void
+    private function dealerTurn(Deck $deck, array $dealerCards): void
     {
         // ディーラーターンのメッセージを表示
         $this->showDealerMsg($dealerCards);
