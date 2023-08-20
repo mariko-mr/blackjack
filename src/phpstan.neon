@@ -4,6 +4,10 @@ parameters:
 		- .
 	excludePaths:
 		- vendor
-        - tests
+		- tests
 	fileExtensions:
 		- php
+	ignoreErrors:
+		-
+			message: '#^Comparison operation "\>" between int\<22, max\> and 21 is always true\.$#'
+			path: lib/BlackjackGame.php

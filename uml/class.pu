@@ -3,6 +3,7 @@
 BlackjackGame -- Player
 BlackjackGame -- Dealer
 BlackjackGame -- Deck
+BlackjackGame -- HandJudger
 Player -- Deck
 Dealer -- Deck
 Deck *-- Card
@@ -10,31 +11,52 @@ Deck *-- Card
 skinparam classAttributeIconSize 0
 
 class BlackjackGame {
+    -const DRAW_TWO
+    -const DRAW_ONE
+    +__construct(Player $player, Dealer $dealer)
     +startGame(): void
-    -getMessage(): string
+    -showStartMsg(): void
+    -showPlayerMsg(): void
+    -showDealerMsg(): void
+    -showDealerDrawnMsg(): void
+    -showJudgementMsg(): void
 }
 
 class Player {
-    +init(): void
-    +drawCards(Deck $deck): array
+    -array $playerCards
+    -int $playerTotalScore
+    +__construct()
+    +drawCards(): array
+    +getTotalScore(): int
+    -updateTotalScore(): int
 }
 
 class Dealer {
-    +init(): void
-    +drawCards(Deck $deck): array
+    -array $dealerCards
+    -int $dealerTotalScore
+    +__construct()
+    +drawCards(): array
+    +getTotalScore(): int
+    -updateTotalScore(): int
 }
 
 class Deck {
-    -array cards
-    +createNewDeck(): array
+    -const SUITS
+    -const CARD_NUM_AND_SCORES
+    -array $cards
+    +__construct()
     +drawCards(): array
 }
 
 class Card {
-    -string suit
-    -int number
+    +__construct(string $suit, string $number, int $score)
     +getSuit(): string
     +getNumber(): string
+    +getScore(): int
+}
+
+class HandJudger {
+    +determineWinner(): string
 }
 
 @enduml
