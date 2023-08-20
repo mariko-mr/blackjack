@@ -3,6 +3,7 @@
 BlackjackGame -- Player
 BlackjackGame -- Dealer
 BlackjackGame -- Deck
+BlackjackGame -- HandJudger
 Player -- Deck
 Dealer -- Deck
 Deck *-- Card
@@ -52,6 +53,10 @@ class Card {
     +getSuit(): string
     +getNumber(): string
     +getScore(): int
+}
+
+class HandJudger {
+    +determineWinner(): string
 }
 
 @enduml

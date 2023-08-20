@@ -6,12 +6,13 @@ actor       Player        as P
 actor       Dealer        as D
 participant Deck          as Deck
 participant Card          as Card
+participant HandJudger    as HandJudger
 
 group ゲームの開始
     Main -> Game : ゲームを開始する
     activate Game
 
-    Game -> Deck : デッキを新規作成する
+    Game -> Deck : デッキを作成する
     activate Deck
     Deck -> Card : カード52枚をシャッフル
     activate Card
@@ -60,103 +61,112 @@ group ゲームの開始
         ディーラーの引いた2枚目のカードはわかりません。
         あなたの現在の得点は15です。カードを引きますか？（y/N）
     end note
-end
 
 
-alt プレイヤーのターン
-    loop  while 'y'
-        Game -> P : プレイヤー手札を取得
-        activate P
-        P -> Deck : カードを1枚とる
-        activate Deck
-        Deck --> P : カードを1枚返す
-        deactivate Deck
-        P -> P : 合計点を更新する
-        P --> Game : プレイヤー手札
-        deactivate P
+    alt プレイヤーのターン
+        loop  while 'y'
+            Game -> P : プレイヤー手札を取得
+            activate P
+            P -> Deck : カードを1枚とる
+            activate Deck
+            Deck --> P : カードを1枚返す
+            deactivate Deck
+            P -> P : 合計点を更新する
+            P --> Game : プレイヤー手札
+            deactivate P
 
+            Game -> Game : メッセージを返す
+            deactivate Game
+
+            note right Game
+                あなたの引いたカードはスペードの５です。
+            end note
+
+            alt 合計が21以内の場合
+                Game -> Game : メッセージを返す
+                deactivate Game
+                note right Game
+                    あなたの現在の得点は20です。カードを引きますか？（y/N）
+                end note
+
+            else 合計が21を超えた場合
+                Game -> Game : メッセージを返す
+                deactivate Game
+                note right Game #FFAAAA
+                    あなたの現在の得点は22です。バーストしました。
+                    残念！あなたの負けです。
+                end note
+                Game -> Game : ゲームを終了する
+                deactivate Game
+            end
+        end
+
+    else ディーラーのターン
         Game -> Game : メッセージを返す
         deactivate Game
-
         note right Game
-            あなたの引いたカードはスペードの５です。
+            ディーラーの引いた2枚目のカードはダイヤの9でした。
+            ディーラーの現在の得点は12です。
         end note
 
-        alt 合計が21以内の場合
-            Game -> Game : メッセージを返す
-            deactivate Game
-            note right Game
-                あなたの現在の得点は20です。カードを引きますか？（y/N）
-            end note
+        loop while 合計17以上になるまで
+            Game -> D : ディーラー手札を取得
+            activate D
+            D -> Deck : カードを1枚とる
+            activate Deck
+            Deck  --> D : カードを1枚返す
+            deactivate Deck
+            D -> D : 合計点を更新する
+            D --> Game : ディーラー手札
+            deactivate D
 
-        else 合計が21を超えた場合
             Game -> Game : メッセージを返す
             deactivate Game
-            note right Game #FFAAAA
-                あなたの現在の得点は22です。バーストしました。
-                残念！あなたの負けです。
+
+            note right Game
+                ディーラーがカードを引きます。
+                ディーラーの引いたカードはクラブの2です。
             end note
-            Game -> Game : ゲームを終了する
-            deactivate Game
         end
     end
 
-else ディーラーのターン
-    Game -> Game : メッセージを返す
-    deactivate Game
-    note right Game
-        ディーラーの引いた2枚目のカードはダイヤの9でした。
-        ディーラーの現在の得点は12です。
-    end note
-
-    loop while 合計17以上になるまで
-        Game -> D : ディーラー手札を取得
-        activate D
-        D -> Deck : カードを1枚とる
-        activate Deck
-        Deck  --> D : カードを1枚返す
-        deactivate Deck
-        D -> D : 合計点を更新する
-        D --> Game : ディーラー手札
-        deactivate D
+    group 勝敗判定
+        Game -> HandJudger : HandJudgerを作成する
 
         Game -> Game : メッセージを返す
         deactivate Game
-
         note right Game
-            ディーラーがカードを引きます。
-            ディーラーの引いたカードはクラブの2です。
+            〇判定結果〇
+            あなたの得点は14です。
+            ディーラーの得点は18です。
         end note
+
+        Game -> HandJudger : 勝者を取得
+        activate HandJudger
+        HandJudger --> Game : 勝者をを返す
+        deactivate HandJudger
+
+
+        alt
+            note right Game
+                あなたの勝ちです！
+            end note
+        else
+            note right Game
+                同点でした。この勝負は引き分けとします。
+            end note
+        else
+            note right Game
+                ディーラーの勝ちです。残念！
+            end note
+        end
+
+        note right Game #FFAAAA
+            ブラックジャックを終了します。
+        end note
+
+        Game -> Game : ゲームを終了する
     end
-end
-
-group 勝敗判定
-    Game -> Game : メッセージを返す
-    deactivate Game
-
-    note right Game
-        〇判定結果〇
-        あなたの得点は14です。
-        ディーラーの得点は18です。
-    end note
-
-    alt
-        note right Game
-            あなたの勝ちです！
-        end note
-    else
-        note right Game
-            同点でした。この勝負は引き分けとします。
-        end note
-    else
-        note right Game
-            ディーラーの勝ちです。残念！
-        end note
-    end
-
-    note right Game #FFAAAA
-        ブラックジャックを終了します。
-    end note
 end
 
 @enduml
