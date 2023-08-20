@@ -86,7 +86,7 @@ class BlackjackGame
     /**
      * プレイヤーのターン
      *
-     * @param Card[] $playerCards
+     * @param Deck $deck
      */
     private function playerTurn(Deck $deck): void
     {
