@@ -49,6 +49,10 @@ class Player
     }
 
     /**
+     * ここを修正
+     * Aの得点を減算して調整するロジックを追加
+     */
+    /**
      * プレイヤーの合計点を更新
      *
      * @param Card[] $drawnCards
@@ -60,6 +64,27 @@ class Player
             $this->playerTotalScore += $drawnCard->getScore();
         }
 
+        // 合計21を超える場合、Aの得点を減算して調整
+        if ($this->playerTotalScore > 21) {
+            $this->reduceScoreWithAce($drawnCards);
+        }
+
         return $this->playerTotalScore;
+    }
+
+    /**
+     * ここを追加
+     * 合計21を超える場合、Aの得点を11から1へと減算する
+     *
+     * @param Card[] $drawnCards
+     * @return void
+     */
+    private function reduceScoreWithAce(array $drawnCards): void
+    {
+        foreach ($drawnCards as $drawnCard) {
+            if ($drawnCard->getNumber() === 'A' && $this->playerTotalScore > 21) {
+                $this->playerTotalScore -= 10;
+            }
+        }
     }
 }

@@ -9,7 +9,6 @@ use Blackjack\Deck;
 use Blackjack\Card;
 
 require_once(__DIR__ . '/../lib/Deck.php');
-require_once(__DIR__ . '/../lib/Card.php');
 
 final class DeckTest extends TestCase
 {

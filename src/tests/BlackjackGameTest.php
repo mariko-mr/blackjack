@@ -11,9 +11,6 @@ use Blackjack\Dealer;
 use Blackjack\Deck;
 
 require_once(__DIR__ . '/../lib/BlackjackGame.php');
-require_once(__DIR__ . '/../lib/Deck.php');
-require_once(__DIR__ . '/../lib/Player.php');
-require_once(__DIR__ . '/../lib/Dealer.php');
 
 final class BlackjackGameTest extends TestCase
 {

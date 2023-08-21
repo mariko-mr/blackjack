@@ -7,8 +7,13 @@ require_once __DIR__ . ('/Card.php');
 class Deck
 {
     private const SUITS = ['ハート', 'ダイヤ', 'スペード', 'クラブ'];
+
+    /**
+     * ここを修正
+     * Aのスコアを11に変更
+     */
     private const CARD_NUM_AND_SCORES = [
-        ['num' => 'A',  'score' => 1],
+        ['num' => 'A',  'score' => 11],
         ['num' => '2',  'score' => 2],
         ['num' => '3',  'score' => 3],
         ['num' => '4',  'score' => 4],
