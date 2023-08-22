@@ -206,7 +206,3 @@ class BlackjackGame
         return $stdin;
     }
 }
-
-/*
-php lib/Main.php
-*/

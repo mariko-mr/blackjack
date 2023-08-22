@@ -29,84 +29,155 @@ final class PlayerTest extends TestCase
     }
 
     /**
-     * ここを追加
+     * ここを修正
      */
     public function testDrawCardsGetTotalScore(): void
     {
-        // テストA, A
-        $player = new Player();
-        $deckMock = $this->getMockBuilder(Deck::class)
-            ->disableOriginalConstructor()
+        // テスト1 [A, A]
+        $player1 = new Player();
+
+        $deckMock1 = $this->getMockBuilder(Deck::class)
             ->getMock();
-        $deckMock->method('drawCards')
-            ->willReturn([
-                new Card('ハート', 'A', 11),
-                new Card('クラブ', 'A', 11)
-            ]);
+        $deckMock1->method('drawCards')
+            ->willReturn([new Card('ハート', 'A', 11), new Card('クラブ', 'A', 11)]);
 
-        // プレイヤーの手札に引かれたカードが正しく追加されているか
-        $playerCards = $player->drawCards($deckMock, 2);
-        $this->assertSame(2, count($playerCards));
         // プレイヤーの合計得点が正しく更新されているか
-        $this->assertSame(12, $player->getTotalScore());
+        $player1->drawCards($deckMock1, 2);
+        $this->assertSame(12, $player1->getTotalScore());
 
 
-        // テストA, K
+        // テスト2 [A, K]
         $player2 = new Player();
+
         $deckMock2 = $this->getMockBuilder(Deck::class)
-            ->disableOriginalConstructor()
             ->getMock();
         $deckMock2->method('drawCards')
-            ->willReturn([
-                new Card('ハート', 'A', 11),
-                new Card('クラブ', 'K', 10),
+            ->willReturn([new Card('ハート', 'A', 11), new Card('クラブ', 'K', 10)]);
 
-            ]);
-
-        // プレイヤーの手札に引かれたカードが正しく追加されているか
-        $playerCards2 = $player2->drawCards($deckMock2, 2);
-        $this->assertSame(2, count($playerCards2));
         // プレイヤーの合計得点が正しく更新されているか
+        $player2->drawCards($deckMock2, 2);
         $this->assertSame(21, $player2->getTotalScore());
 
 
-        // テスト2, A, A
+        // テスト3 [2, A, A]
         $player3 = new Player();
-        $deckMock2 = $this->getMockBuilder(Deck::class)
-            ->disableOriginalConstructor()
+
+        $deckMock3_1 = $this->getMockBuilder(Deck::class)
             ->getMock();
-        $deckMock2->method('drawCards')
-            ->willReturn([
-                new Card('スペード', '2', 2),
-                new Card('ハート', 'A', 11),
-                new Card('クラブ', 'A', 11),
+        $deckMock3_1->method('drawCards')
+            ->willReturn([new Card('スペード', '2', 2), new Card('ハート', 'A', 11)]);
 
-            ]);
+        $deckMock3_2 = $this->getMockBuilder(Deck::class)
+            ->getMock();
+        $deckMock3_2->method('drawCards')
+            ->willReturn([new Card('クラブ', 'A', 11)]);
 
-        // プレイヤーの手札に引かれたカードが正しく追加されているか
-        $playerCards3 = $player3->drawCards($deckMock2, 3);
-        $this->assertSame(3, count($playerCards3));
         // プレイヤーの合計得点が正しく更新されているか
+        $player3->drawCards($deckMock3_1, 2);
+        $player3->drawCards($deckMock3_2, 1);
         $this->assertSame(14, $player3->getTotalScore());
 
 
-        // テストA, 2, 8, A
+        // テスト4 [A, 2, 8, A]
         $player4 = new Player();
-        $deckMock4 = $this->getMockBuilder(Deck::class)
-            ->disableOriginalConstructor()
+
+        $deckMock4_1 = $this->getMockBuilder(Deck::class)
             ->getMock();
-        $deckMock4->method('drawCards')
+        $deckMock4_1->method('drawCards')
+            ->willReturn([new Card('スペード', 'A', 11), new Card('スペード', '2', 2)]);
+
+        $deckMock4_2 = $this->getMockBuilder(Deck::class)
+            ->getMock();
+        $deckMock4_2->method('drawCards')
             ->willReturn([
-                new Card('スペード', 'A', 11),
-                new Card('スペード', '2', 2),
-                new Card('ハート', '8', 8),
-                new Card('クラブ', 'A', 11),
+                new Card('ハート', '8', 8)
             ]);
 
-        // プレイヤーの手札に引かれたカードが正しく追加されているか
-        $playerCards4 = $player4->drawCards($deckMock4, 4);
-        $this->assertSame(4, count($playerCards4));
+        $deckMock4_3 = $this->getMockBuilder(Deck::class)
+            ->getMock();
+        $deckMock4_3->method('drawCards')
+            ->willReturn([
+                new Card('クラブ', 'A', 11)
+            ]);
+
         // プレイヤーの合計得点が正しく更新されているか
+        $player4->drawCards($deckMock4_1, 2);
+        $player4->drawCards($deckMock4_2, 1);
+        $player4->drawCards($deckMock4_3, 1);
         $this->assertSame(12, $player4->getTotalScore());
+
+
+        // テスト5 [A, K, A, J]
+        $player5 = new Player();
+
+        $deckMock5_1 = $this->getMockBuilder(Deck::class)
+            ->getMock();
+        $deckMock5_1->method('drawCards')
+            ->willReturn([new Card('スペード', 'A', 11), new Card('スペード', 'K', 10)]);
+
+        $deckMock5_2 = $this->getMockBuilder(Deck::class)
+            ->getMock();
+        $deckMock5_2->method('drawCards')
+            ->willReturn([
+                new Card('ハート', 'A', 11)
+            ]);
+
+        $deckMock5_3 = $this->getMockBuilder(Deck::class)
+            ->getMock();
+        $deckMock5_3->method('drawCards')
+            ->willReturn([
+                new Card('クラブ', 'J', 10)
+            ]);
+
+        // プレイヤーの合計得点が正しく更新されているか
+        $player5->drawCards($deckMock5_1, 2);
+        $player5->drawCards($deckMock5_2, 1);
+        $player5->drawCards($deckMock5_3, 1);
+        $this->assertSame(22, $player5->getTotalScore());
+
+
+        // テスト6 [A, A, A, A, 8, K]
+        $player6 = new Player();
+
+        $deckMock6_1 = $this->getMockBuilder(Deck::class)
+            ->getMock();
+        $deckMock6_1->method('drawCards')
+            ->willReturn([new Card('スペード', 'A', 11), new Card('ハート', 'A', 11)]);
+
+        $deckMock6_2 = $this->getMockBuilder(Deck::class)
+            ->getMock();
+        $deckMock6_2->method('drawCards')
+            ->willReturn([
+                new Card('クラブ', 'A', 11)
+            ]);
+
+        $deckMock6_3 = $this->getMockBuilder(Deck::class)
+            ->getMock();
+        $deckMock6_3->method('drawCards')
+            ->willReturn([
+                new Card('ダイヤ', 'A', 11)
+            ]);
+
+        $deckMock6_4 = $this->getMockBuilder(Deck::class)
+            ->getMock();
+        $deckMock6_4->method('drawCards')
+            ->willReturn([
+                new Card('ダイヤ', '8', 8)
+            ]);
+
+        $deckMock6_5 = $this->getMockBuilder(Deck::class)
+            ->getMock();
+        $deckMock6_5->method('drawCards')
+            ->willReturn([
+                new Card('クラブ', 'K', 10)
+            ]);
+
+        // プレイヤーの合計得点が正しく更新されているか
+        $player6->drawCards($deckMock6_1, 2);
+        $player6->drawCards($deckMock6_2, 1);
+        $player6->drawCards($deckMock6_3, 1);
+        $player6->drawCards($deckMock6_4, 1);
+        $player6->drawCards($deckMock6_5, 1);
+        $this->assertSame(22, $player6->getTotalScore());
     }
 }
