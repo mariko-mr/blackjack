@@ -6,20 +6,30 @@ class Dealer
 {
     /**
      * @var Card[] $dealerCards
-     * @var int $dealerTotalScore
+     * @var int    $dealerTotalScore
+     * @var int    $aceReductionCount
      */
     private array $dealerCards;
     private int $dealerTotalScore;
 
+    /**
+     * ここを追加
+     */
+    private int $aceReductionCount;
+
+    /**
+     * ここを追加
+     */
     public function __construct()
     {
         // 初期化処理
         $this->dealerCards = [];
         $this->dealerTotalScore = 0;
+        $this->aceReductionCount = 0;
     }
 
     /**
-     * デッキからカードを引いて合計点を更新し、持ち札に加える
+     * デッキからカードを引いて持ち札に加え、合計点を更新する
      *
      * @param Deck $deck
      * @param int $drawNum
@@ -29,11 +39,11 @@ class Dealer
     {
         $drawnCards = $deck->drawCards($drawNum);
 
-        // 合計点を更新する
-        $this->dealerTotalScore = $this->updateTotalScore($drawnCards);
-
         // 引いたカードを持ち札に加える
         $this->dealerCards = array_merge($this->dealerCards, $drawnCards);
+
+        // 合計点を更新する
+        $this->dealerTotalScore = $this->updateTotalScore($drawnCards);
 
         return $this->dealerCards;
     }
@@ -49,10 +59,6 @@ class Dealer
     }
 
     /**
-     * ここを修正
-     * Aの得点を減算して調整するロジックを追加
-     */
-    /**
      * ディーラーの合計点を更新
      *
      * @param Card[] $drawnCards
@@ -60,31 +66,57 @@ class Dealer
      */
     private function updateTotalScore(array $drawnCards): int
     {
+        // 引いたカードをそれぞれ合計点に合算する
         foreach ($drawnCards as $drawnCard) {
             $this->dealerTotalScore += $drawnCard->getScore();
         }
 
-        // 合計21を超える場合、Aの得点を減算して調整
-        if ($this->dealerTotalScore > 21) {
-            $this->reduceScoreWithAce($drawnCards);
+        // 合計21を超え、Aがあれば得点を減算して調整
+        if ($this->dealerTotalScore > 21 && $this->hasAce()) {
+            $this->reduceScoreWithAce();
         }
 
         return $this->dealerTotalScore;
     }
 
     /**
-     * ここを追加
-     * 合計21を超える場合、Aの得点を11から1へと減算する
+     * $dealerCardsにAが含まれるかを調べる
      *
-     * @param Card[] $drawnCards
+     * @return bool
+     */
+    private function hasAce(): bool
+    {
+        foreach ($this->dealerCards as $dealerCard) {
+            if ($dealerCard->getNumber() == 'A') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Aの得点を11から1へと減算する
+     *
      * @return void
      */
-    private function reduceScoreWithAce(array $drawnCards): void
+    private function reduceScoreWithAce(): void
     {
-        foreach ($drawnCards as $drawnCard) {
-            if ($drawnCard->getNumber() === 'A' && $this->dealerTotalScore > 21) {
-                $this->dealerTotalScore -= 10;
+        // Aの出現回数を計算
+        $aceCount = 0;
+        foreach ($this->dealerCards as $dealerCard) {
+            if ($dealerCard->getNumber() == 'A') {
+                $aceCount++;
             }
+        }
+
+        // Aの出現回数以上に減算しないように条件を設定
+        while ($this->dealerTotalScore > 21 && $aceCount > $this->aceReductionCount) {
+            // Aの得点分を減算
+            $this->dealerTotalScore -= 10;
+
+            // Aによる減算回数をカウント
+            $this->aceReductionCount++;
         }
     }
 }
