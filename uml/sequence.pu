@@ -1,8 +1,11 @@
 @startuml blackjack
 
+skinparam actorStyle awesome
+
 participant Main          as Main
 participant BlackjackGame as Game
-actor       Player        as P
+actor       PlayerAuto    as C
+actor       PlayerManual  as P #pink
 actor       Dealer        as D
 participant Deck          as Deck
 participant Card          as Card
@@ -30,6 +33,21 @@ group ゲームの開始
     P -> P : 初期化
     deactivate P
 
+    Game -> C : CPUを作成
+    activate C
+    C -> C : 初期化
+    deactivate C
+
+    Game -> C : CPU手札を取得
+    activate C
+    C -> Deck : カードを2枚とる
+    activate Deck
+    Deck --> C : カードを2枚返す
+    deactivate Deck
+    C -> C : 合計点を更新する
+    C --> Game : CPU手札
+    deactivate C
+
     Game -> P : プレイヤー手札を取得
     activate P
     P -> Deck : カードを2枚とる
@@ -55,10 +73,16 @@ group ゲームの開始
 
     note right Game
         ブラックジャックを開始します。
+
         あなたの引いたカードはハートの7です。
         あなたの引いたカードはクラブの8です。
+
+        CPUの引いたカードはハートの3です。
+        CPUの引いたカードはスペードの10です。
+
         ディーラーの引いたカードはダイヤのQです。
         ディーラーの引いた2枚目のカードはわかりません。
+
         あなたの現在の得点は15です。カードを引きますか？（y/N）
     end note
 
@@ -101,11 +125,32 @@ group ゲームの開始
             end
         end
 
+    else CPUのターン
+        loop while 合計17以上になるまで
+            Game -> C : CPU手札を取得
+            activate C
+            C -> Deck : カードを1枚とる
+            activate Deck
+            Deck  --> C : カードを1枚返す
+            deactivate Deck
+            C -> C : 合計点を更新する
+            C --> Game : CPU手札
+            deactivate C
+
+            Game -> Game : メッセージを返す
+            deactivate Game
+
+            note right Game
+                CPUがカードを引きます。
+                CPUの引いたカードはハートの5です。
+            end note
+        end
+
     else ディーラーのターン
         Game -> Game : メッセージを返す
         deactivate Game
         note right Game
-            ディーラーの引いた2枚目のカードはダイヤの9でした。
+            ディーラーの引いた2枚目のカードはダイヤの2でした。
             ディーラーの現在の得点は12です。
         end note
 
@@ -125,7 +170,7 @@ group ゲームの開始
 
             note right Game
                 ディーラーがカードを引きます。
-                ディーラーの引いたカードはクラブの2です。
+                ディーラーの引いたカードはクラブの5です。
             end note
         end
     end
@@ -137,8 +182,9 @@ group ゲームの開始
         deactivate Game
         note right Game
             〇判定結果〇
-            あなたの得点は14です。
-            ディーラーの得点は18です。
+            あなたの得点は20です。
+            CPUの得点は18です。
+            ディーラーの得点は17です。
         end note
 
         Game -> HandJudger : 勝者を取得
