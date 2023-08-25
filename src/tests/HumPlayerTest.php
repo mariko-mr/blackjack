@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Blackjack\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Blackjack\Player;
+use Blackjack\HumPlayer;
 use Blackjack\Deck;
 use Blackjack\Card;
 
-require_once(__DIR__ . '/../lib/Player.php');
+require_once(__DIR__ . '/../lib/HumPlayer.php');
 
-final class PlayerTest extends TestCase
+final class HumPlayerTest extends TestCase
 {
     public function testDrawCardsCount(): void
     {
-        $player = new Player();
+        $player = new HumPlayer();
         $deck = new Deck();
         $playerCards = [];
 
@@ -28,13 +28,10 @@ final class PlayerTest extends TestCase
         $this->assertSame(3, count($playerCards));
     }
 
-    /**
-     * ここを修正
-     */
     public function testDrawCardsGetTotalScore(): void
     {
         // テスト1 [A, A]
-        $player1 = new Player();
+        $player1 = new HumPlayer();
 
         $deckMock1 = $this->getMockBuilder(Deck::class)
             ->getMock();
@@ -47,7 +44,7 @@ final class PlayerTest extends TestCase
 
 
         // テスト2 [A, K]
-        $player2 = new Player();
+        $player2 = new HumPlayer();
 
         $deckMock2 = $this->getMockBuilder(Deck::class)
             ->getMock();
@@ -60,7 +57,7 @@ final class PlayerTest extends TestCase
 
 
         // テスト3 [2, A, A]
-        $player3 = new Player();
+        $player3 = new HumPlayer();
 
         $deckMock3_1 = $this->getMockBuilder(Deck::class)
             ->getMock();
@@ -79,7 +76,7 @@ final class PlayerTest extends TestCase
 
 
         // テスト4 [A, 2, 8, A]
-        $player4 = new Player();
+        $player4 = new HumPlayer();
 
         $deckMock4_1 = $this->getMockBuilder(Deck::class)
             ->getMock();
@@ -108,7 +105,7 @@ final class PlayerTest extends TestCase
 
 
         // テスト5 [A, K, A, J]
-        $player5 = new Player();
+        $player5 = new HumPlayer();
 
         $deckMock5_1 = $this->getMockBuilder(Deck::class)
             ->getMock();
@@ -137,7 +134,7 @@ final class PlayerTest extends TestCase
 
 
         // テスト6 [A, A, A, A, 8, K]
-        $player6 = new Player();
+        $player6 = new HumPlayer();
 
         $deckMock6_1 = $this->getMockBuilder(Deck::class)
             ->getMock();
