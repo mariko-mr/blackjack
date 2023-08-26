@@ -12,6 +12,6 @@ $deck = new Deck();
 $handJudger = new HandJudger();
 $player = new HumPlayer();
 $dealer = new Dealer();
-$game = new BlackjackGame($deck, $handJudger, $player, $dealer);
 
+$game = new BlackjackGame($deck, $handJudger, $player, $dealer);
 $game->startGame();
