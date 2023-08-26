@@ -42,19 +42,6 @@ class HumPlayer
     }
 
     /**
-     * ここを追加
-     */
-    /**
-     * プレイヤーのカードを取得
-     *
-     * @return array
-     */
-    public function getCards(): array
-    {
-        return $this->playerCards;
-    }
-
-    /**
      * プレイヤーの合計点を取得
      *
      * @return int
