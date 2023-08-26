@@ -22,6 +22,7 @@ class BlackjackGame
 
     /**
      * ブラックジャックゲームを開始
+     *
      */
     public function startGame(): void
     {
@@ -48,7 +49,6 @@ class BlackjackGame
 
             $this->dealerTurn();
         }
-
 
         // 判定して終了する
         $this->showDown($this->handJudger);
@@ -157,7 +157,6 @@ class BlackjackGame
     }
 
     /**
-     * ここを追加
      * CPUのターン
      *
      * @param CpuPlayer $cpuPlayer
@@ -243,32 +242,32 @@ class BlackjackGame
      */
     private function showDown(HandJudger $handJudger): void
     {
-        $playerTotalScore = $this->player->getTotalScore();
-        $dealerTotalScore = $this->dealer->getTotalScore();
-        $cpuTotalScores = [];
+        $participants = [
+            0 => ['name' => 'あなた', 'total' => $this->player->getTotalScore()],
+            3 => ['name' => 'ディーラー', 'total' => $this->dealer->getTotalScore()],
+        ];
 
         foreach ($this->cpuPlayers as $num => $cpuPlayer) {
-            $cpuTotalScores[$num] = $cpuPlayer->getTotalScore();
+            $participants[$num] = ['name' => 'CPUプレイヤー' . $num, 'total' => $cpuPlayer->getTotalScore()];
         }
+
+        // あなた-CPU1-CPU2-ディーラー の順になるように並び替え
+        ksort($participants);
 
         // 得点発表
         echo  PHP_EOL .
             '判定に移ります。' . PHP_EOL . PHP_EOL .
-            '----- 判定結果 -----' . PHP_EOL .
-            'あなたの得点は' .
-            $playerTotalScore . 'です。' . PHP_EOL;
+            '-------- 判定結果 --------' . PHP_EOL;
 
-        foreach ($cpuTotalScores as $num => $cpuTotalScore) {
-            echo 'CPUプレイヤー' . $num . 'の得点は' .
-                $cpuTotalScore . 'です。' . PHP_EOL;
+        foreach ($participants as $participant) {
+            echo $participant['name'] . 'の得点は' .
+                $participant['total'] . 'です。' . PHP_EOL;
         }
 
-        echo 'ディーラーの得点は' .
-            $dealerTotalScore . 'です。' . PHP_EOL . PHP_EOL;
-
         // 勝敗判定
-        $winnerMsg = $handJudger->determineWinner($playerTotalScore, $cpuTotalScores, $dealerTotalScore);
-        echo $winnerMsg . PHP_EOL . PHP_EOL;
+        $winnerMsg = $handJudger->determineWinner($participants);
+        echo '--------------------------' . PHP_EOL .
+            $winnerMsg . PHP_EOL . PHP_EOL;
 
         // ゲームを終了する
         echo 'ブラックジャックを終了します。' . PHP_EOL;
