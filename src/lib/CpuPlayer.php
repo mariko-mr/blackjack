@@ -2,22 +2,22 @@
 
 namespace Blackjack;
 
-class HumPlayer
+class CpuPlayer
 {
     /**
-     * @var Card[] $playerCards
-     * @var int    $playerTotalScore
+     * @var Card[] $cpuCards
+     * @var int    $cpuTotalScore
      * @var int    $aceReductionCount
      */
-    private array $playerCards;
-    private int $playerTotalScore;
+    private array $cpuCards;
+    private int $cpuTotalScore;
     private int $aceReductionCount;
 
     public function __construct()
     {
         // 初期化処理
-        $this->playerCards = [];
-        $this->playerTotalScore = 0;
+        $this->cpuCards = [];
+        $this->cpuTotalScore = 0;
         $this->aceReductionCount = 0;
     }
 
@@ -33,39 +33,39 @@ class HumPlayer
         $drawnCards = $deck->drawCards($drawNum);
 
         // 引いたカードを持ち札に加える
-        $this->playerCards = array_merge($this->playerCards, $drawnCards);
+        $this->cpuCards = array_merge($this->cpuCards, $drawnCards);
 
         // 合計点を更新する
-        $this->playerTotalScore = $this->updateTotalScore($drawnCards);
+        $this->cpuTotalScore = $this->updateTotalScore($drawnCards);
 
-        return $this->playerCards;
+        return $this->cpuCards;
     }
 
     /**
      * ここを追加
      */
     /**
-     * プレイヤーのカードを取得
+     * CPUプレイヤーのカードを取得
      *
      * @return array
      */
     public function getCards(): array
     {
-        return $this->playerCards;
+        return $this->cpuCards;
     }
 
     /**
-     * プレイヤーの合計点を取得
+     * CPUプレイヤーの合計点を取得
      *
      * @return int
      */
     public function getTotalScore(): int
     {
-        return $this->playerTotalScore;
+        return $this->cpuTotalScore;
     }
 
     /**
-     * プレイヤーの合計点を更新
+     * CPUプレイヤーの合計点を更新
      *
      * @param Card[] $drawnCards
      * @return int
@@ -74,26 +74,26 @@ class HumPlayer
     {
         // 引いたカードをそれぞれ合計点に合算する
         foreach ($drawnCards as $drawnCard) {
-            $this->playerTotalScore += $drawnCard->getScore();
+            $this->cpuTotalScore += $drawnCard->getScore();
         }
 
         // 合計21を超え、Aがあれば得点を減算して調整
-        if ($this->playerTotalScore > 21 && $this->hasAce()) {
+        if ($this->cpuTotalScore > 21 && $this->hasAce()) {
             $this->reduceScoreWithAce();
         }
 
-        return $this->playerTotalScore;
+        return $this->cpuTotalScore;
     }
 
     /**
-     * $playerCardsにAが含まれるかを調べる
+     * $cpuCardsにAが含まれるかを調べる
      *
      * @return bool
      */
     private function hasAce(): bool
     {
-        foreach ($this->playerCards as $playerCard) {
-            if ($playerCard->getNumber() == 'A') {
+        foreach ($this->cpuCards as $cpuCard) {
+            if ($cpuCard->getNumber() == 'A') {
                 return true;
             }
         }
@@ -110,16 +110,16 @@ class HumPlayer
     {
         // Aの出現回数を計算
         $aceCount = 0;
-        foreach ($this->playerCards as $playerCard) {
-            if ($playerCard->getNumber() == 'A') {
+        foreach ($this->cpuCards as $cpuCard) {
+            if ($cpuCard->getNumber() == 'A') {
                 $aceCount++;
             }
         }
 
         // Aの出現回数以上に減算しないように条件を設定
-        while ($this->playerTotalScore > 21 && $aceCount > $this->aceReductionCount) {
+        while ($this->cpuTotalScore > 21 && $aceCount > $this->aceReductionCount) {
             // Aの得点分を減算
-            $this->playerTotalScore -= 10;
+            $this->cpuTotalScore -= 10;
 
             // Aによる減算回数をカウント
             $this->aceReductionCount++;

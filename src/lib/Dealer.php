@@ -11,15 +11,8 @@ class Dealer
      */
     private array $dealerCards;
     private int $dealerTotalScore;
-
-    /**
-     * ここを追加
-     */
     private int $aceReductionCount;
 
-    /**
-     * ここを追加
-     */
     public function __construct()
     {
         // 初期化処理
@@ -32,7 +25,7 @@ class Dealer
      * デッキからカードを引いて持ち札に加え、合計点を更新する
      *
      * @param Deck $deck
-     * @param int $drawNum
+     * @param int  $drawNum
      * @return Card[]
      */
     public function drawCards(Deck $deck, int $drawNum): array
@@ -45,6 +38,19 @@ class Dealer
         // 合計点を更新する
         $this->dealerTotalScore = $this->updateTotalScore($drawnCards);
 
+        return $this->dealerCards;
+    }
+
+    /**
+     * ここを追加
+     */
+    /**
+     * ディーラーのカードを取得
+     *
+     * @return array
+     */
+    public function getCards(): array
+    {
         return $this->dealerCards;
     }
 
