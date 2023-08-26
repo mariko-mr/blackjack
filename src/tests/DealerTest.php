@@ -28,9 +28,6 @@ final class DealerTest extends TestCase
         $this->assertSame(3, count($dealerCards));
     }
 
-    /**
-     * ここを追加
-     */
     public function testDrawCardsGetTotalScore(): void
     {
         // テスト1 [A, A]
