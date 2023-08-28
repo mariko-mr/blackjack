@@ -41,7 +41,7 @@ class Deck
     }
 
     /**
-     * @param int $drawNum
+     * @param  int $drawNum
      * @return Card[]
      */
     public function drawCards(int $drawNum): array

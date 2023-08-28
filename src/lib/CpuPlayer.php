@@ -10,8 +10,8 @@ class CpuPlayer
      * @var int    $aceReductionCount
      */
     private array $cpuCards;
-    private int $cpuTotalScore;
-    private int $aceReductionCount;
+    private int   $cpuTotalScore;
+    private int   $aceReductionCount;
 
     public function __construct()
     {
@@ -24,8 +24,8 @@ class CpuPlayer
     /**
      * デッキからカードを引いて持ち札に加え、合計点を更新する
      *
-     * @param Deck $deck
-     * @param int  $drawNum
+     * @param  Deck $deck
+     * @param  int  $drawNum
      * @return Card[]
      */
     public function drawCards(Deck $deck, int $drawNum): array
@@ -41,9 +41,6 @@ class CpuPlayer
         return $this->cpuCards;
     }
 
-    /**
-     * ここを追加
-     */
     /**
      * CPUプレイヤーのカードを取得
      *
@@ -67,7 +64,7 @@ class CpuPlayer
     /**
      * CPUプレイヤーの合計点を更新
      *
-     * @param Card[] $drawnCards
+     * @param  Card[] $drawnCards
      * @return int
      */
     private function updateTotalScore(array $drawnCards): int

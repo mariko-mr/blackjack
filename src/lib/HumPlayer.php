@@ -10,8 +10,8 @@ class HumPlayer
      * @var int    $aceReductionCount
      */
     private array $playerCards;
-    private int $playerTotalScore;
-    private int $aceReductionCount;
+    private int   $playerTotalScore;
+    private int   $aceReductionCount;
 
     public function __construct()
     {
@@ -24,8 +24,8 @@ class HumPlayer
     /**
      * デッキからカードを引いて持ち札に加え、合計点を更新する
      *
-     * @param Deck $deck
-     * @param int  $drawNum
+     * @param  Deck $deck
+     * @param  int  $drawNum
      * @return Card[]
      */
     public function drawCards(Deck $deck, int $drawNum): array
@@ -41,9 +41,6 @@ class HumPlayer
         return $this->playerCards;
     }
 
-    /**
-     * ここを追加
-     */
     /**
      * プレイヤーのカードを取得
      *
@@ -67,7 +64,7 @@ class HumPlayer
     /**
      * プレイヤーの合計点を更新
      *
-     * @param Card[] $drawnCards
+     * @param  Card[] $drawnCards
      * @return int
      */
     private function updateTotalScore(array $drawnCards): int
