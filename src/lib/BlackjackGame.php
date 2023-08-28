@@ -2,13 +2,15 @@
 
 namespace Blackjack;
 
-require_once __DIR__ . ('/CpuPlayer.php');
-
+/**
+ * ここを修正
+ * コンストラクタに HandJudger の依存関係を注入
+ *
+ */
 class BlackjackGame
 {
     private const DRAW_TWO = 2;
     private const DRAW_ONE = 1;
-    private array $cpuPlayers;
 
     public function __construct(
         private Deck $deck,
@@ -17,8 +19,6 @@ class BlackjackGame
         private Message $message,
         private HandJudger $handJudger,
     ) {
-        // 初期化処理
-        $this->cpuPlayers = [];
     }
 
     /**
@@ -27,8 +27,12 @@ class BlackjackGame
      */
     public function startGame(): void
     {
-        // ゲームの設定をする
-        $this->setupGame();
+        // プレイヤーとディーラーが始めに2枚ずつカードを引く
+        $playerCards = $this->player->drawCards($this->deck, self::DRAW_TWO);
+        $dealerCards = $this->dealer->drawCards($this->deck, self::DRAW_TWO);
+
+        // CPUプレイヤーもカードを引く
+
 
         // スタート時のメッセージを表示
         $this->message->showStartMsg($this->player, $this->cpuPlayers, $this->dealer);
@@ -42,13 +46,10 @@ class BlackjackGame
             $validatedAnswer = $this->playerTurn();
         }
 
-        // CPUプレイヤーとディーラーがカードを引くターン
-        if ($validatedAnswer === 'N') {
-            foreach ($this->cpuPlayers as $num => $cpuPlayer) {
-                $this->cpuTurn($cpuPlayer, $num);
-            }
 
-            $this->dealerTurn();
+        // ディーラーがカードを引くターン
+        if ($validatedStdin === 'N') {
+            $this->dealerTurn($dealerCards);
         }
 
         // 判定して終了する
@@ -87,10 +88,8 @@ class BlackjackGame
      */
     private function playerTurn(): string
     {
-        // プレイヤーがカードを1枚引く
-        $this->player->drawCards($this->deck, self::DRAW_ONE);
-
-        $playerLastDrawnCard = $this->player->getCards()[array_key_last($this->player->getCards())];
+        $playerCards = $this->player->drawCards($this->deck, self::DRAW_ONE);
+        $playerLastDrawnCard = $playerCards[array_key_last($playerCards)];
         $playerTotalScore = $this->player->getTotalScore();
 
         $this->message->showPlayerTurnMsg($playerLastDrawnCard, $playerTotalScore);
@@ -123,8 +122,9 @@ class BlackjackGame
     /**
      * ディーラーのターン
      *
+     * @param Card[] $dealerCards
      */
-    private function dealerTurn(): void
+    private function dealerTurn(array $dealerCards): void
     {
         // ディーラーが引いた2枚目のカードを表示
         $this->message->showDealerTurnMsg($this->dealer);
@@ -189,14 +189,12 @@ class BlackjackGame
      * @param  string $inputAnswer
      * @return string $inputAnswer validated 'y' or 'N'
      */
-    private function validateAnswer(string $inputAnswer): string
+    private function validateInput(string $stdin): string
     {
-        while (!($inputAnswer === 'y' || $inputAnswer === 'N')) {
+        while (!($stdin === 'y' || $stdin === 'N')) {
             echo PHP_EOL .
                 'yまたはNを入力してください。' . PHP_EOL;
-            $inputAnswer = trim(fgets(STDIN));
         }
-        return $inputAnswer;
     }
 
     /**
