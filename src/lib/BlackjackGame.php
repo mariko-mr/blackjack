@@ -9,6 +9,9 @@ namespace Blackjack;
  */
 class BlackjackGame
 {
+    /**
+     * @var array $cpuPlayer
+     */
     private const DRAW_TWO = 2;
     private const DRAW_ONE = 1;
 
