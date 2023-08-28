@@ -40,6 +40,7 @@ class BlackjackGame
         // スタート時のメッセージを表示
         $this->message->showStartMsg($this->player, $this->cpuPlayers, $this->dealer);
         // $validatedAnswer = $this->validator->validateAnswer(trim(fgets(STDIN)));
+        
         // 入力値のバリデーション処理 :TODO: Validatorクラスにうつす
         $inputAnswer = trim(fgets(STDIN));
         $validatedAnswer = $this->validateAnswer($inputAnswer);
