@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Blackjack\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Blackjack\BlackjackGame;
-use Blackjack\Player;
+use Blackjack\HumPlayer;
 use Blackjack\Dealer;
 use Blackjack\Deck;
 
@@ -16,7 +15,7 @@ final class BlackjackGameTest extends TestCase
 {
     public function testStartGame(): void
     {
-        $player = new Player();
+        $player = new HumPlayer();
         $dealer = new Dealer();
         $deck = new Deck();
         $playerCards = $player->drawCards($deck, 2);

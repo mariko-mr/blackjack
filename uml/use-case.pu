@@ -1,41 +1,54 @@
 @startuml blackjack
 
 left to right direction
+skinparam actorStyle awesome
 
-actor "プレイヤー" as user1
-actor "ディーラー" as user2
+actor "ディーラー" as d
 
-rectangle ブラックジャックゲーム {
-  usecase "ゲームをスタートする" as UC1
-  usecase "デッキからカードを2枚引く" as UC2
-  usecase "勝敗を判定する" as UC3
-  usecase "ゲームを終了する" as UC4
+package プレイヤー as p{
+  actor "あなた" as you #pink;line:red;line.bold;
+  package CPU as cpu{
+    actor "CPUプレイヤー" as cpu1
+    actor "CPUプレイヤー" as cpu2
+    }
 }
 
-rectangle カードの追加(プレイヤー) {
-  usecase "カードを追加" as UC_player_card1
-  usecase "スタンド" as UC_player_card2
-  usecase "合計値が21を超えたら負け" as UC_player_card3
+rectangle ブラックジャックゲーム as game{
+  usecase "デッキからカードを2枚引く" as UC1
+  usecase "カードを追加する\n（ヒット）" as UC2
+  usecase "カードを追加しない\n（スタンド）" as UC3
+  usecase "勝敗を判定する" as UC4
 }
 
 rectangle カードの追加(ディーラー) {
-  usecase "合計値が17を超えるまでカードを追加" as UC_dealer_card1
-  usecase "合計値が21を超えたら負け" as UC_dealer_card2
+  usecase "合計21を超えたら負け" as UC_d_card1
+  usecase "合計17以上になるまで\nカードを追加" as UC_d_card2
 }
 
-user1 --> UC1
-user1 --> UC2
-user1 --> UC3
-user1 --> UC4
-UC_player_card1 <-- user1
-UC_player_card2 <-- user1
-UC_player_card3 <-- user1
+rectangle カードの追加(プレイヤー) {
+  usecase "カードを追加する\n（ヒット）" as UC_you_card1
+  usecase "カードを追加しない\n（スタンド）" as UC_you_card2
+  usecase "合計21を超えたら負け" as UC_you_card3
+}
 
-UC1 <-- user2
-UC2 <-- user2
-UC3 <-- user2
-UC4 <-- user2
-user2 --> UC_dealer_card1
-user2 --> UC_dealer_card2
+rectangle カードの追加(CPU) {
+  usecase "合計17以上になるまで\nカードを追加" as UC_cpu_card1
+  usecase "合計21を超えたら負け" as UC_cpu_card2
+}
+
+d --> UC2
+d --> UC3
+UC2 <-- p
+UC3 <-- p
+
+d -up--> UC_d_card1
+d --> UC_d_card2
+
+you --> UC_you_card1
+you --> UC_you_card2
+you --> UC_you_card3
+
+cpu2 -right--> UC_cpu_card1
+cpu2 --> UC_cpu_card2
 
 @enduml
