@@ -6,6 +6,9 @@ require_once __DIR__ . ('/CpuPlayer.php');
 
 class BlackjackGame
 {
+    /**
+     * @var array $cpuPlayer
+     */
     private const DRAW_TWO = 2;
     private const DRAW_ONE = 1;
     private array $cpuPlayers;
