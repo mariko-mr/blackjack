@@ -14,26 +14,19 @@ class BlackjackGame
 
     public function __construct(
         private Deck $deck,
-        private Player $player,
+        private HumPlayer $player,
         private Dealer $dealer,
-        private HandJudger $handJudger
+        private Message $message,
+        private HandJudger $handJudger,
     ) {
     }
 
     /**
      * ブラックジャックゲームを開始
+     *
      */
     public function startGame(): void
     {
-        // スタート時のメッセージを表示
-        // echo 'プレイヤーの人数を決定してください(1~3を選択して入力)'
-
-        // CPUプレイヤーを新規作成する
-        // 1なら0人
-        // 2なら1人
-        // 3なら2人
-
-
         // プレイヤーとディーラーが始めに2枚ずつカードを引く
         $playerCards = $this->player->drawCards($this->deck, self::DRAW_TWO);
         $dealerCards = $this->dealer->drawCards($this->deck, self::DRAW_TWO);
@@ -42,20 +35,15 @@ class BlackjackGame
 
 
         // スタート時のメッセージを表示
-        $this->showStartMsg($playerCards, $dealerCards);
-
-        // 入力値のバリデーション処理
-        $stdin = trim(fgets(STDIN));
-        $validatedStdin = $this->validateInput($stdin);
-
+        $this->message->showStartMsg($this->player, $this->cpuPlayers, $this->dealer);
+        // $validatedAnswer = $this->validator->validateAnswer(trim(fgets(STDIN)));
+        // 入力値のバリデーション処理 :TODO: Validatorクラスにうつす
+        $inputAnswer = trim(fgets(STDIN));
+        $validatedAnswer = $this->validateAnswer($inputAnswer);
 
         // プレイヤーがカードを引くターン
-        while ($validatedStdin === 'y') {
-            $this->playerTurn();
-
-            // 入力値のバリデーション処理
-            $stdin = trim(fgets(STDIN));
-            $validatedStdin = $this->validateInput($stdin);
+        while ($validatedAnswer === 'y') {
+            $validatedAnswer = $this->playerTurn();
         }
 
 
@@ -64,162 +52,166 @@ class BlackjackGame
             $this->dealerTurn($dealerCards);
         }
 
-
         // 判定して終了する
         $this->showDown($this->handJudger);
     }
 
     /**
-     * 開始時のメッセージを表示
+     * 開始時のゲーム設定
      *
-     * @param Card[] $playerCards
-     * @param Card[] $dealerCards
      */
-    private function showStartMsg(array $playerCards, array $dealerCards): void
+    private function setupGame(): void
     {
-        echo 'ブラックジャックを開始します。' . PHP_EOL . PHP_EOL;
+        $this->message->showSetupMsg();
 
-        // プレイヤーのカードを表示
-        foreach ($playerCards as $card) {
-            echo 'あなたの引いたカードは' .
-                $card->getSuit() . 'の' .
-                $card->getNumber() . 'です。' . PHP_EOL;
+        // 入力値のバリデーション処理 :TODO: Validatorクラスにうつす
+        $validatedNumber = $this->validateNumber(trim(fgets(STDIN)));
+
+        // CPUプレイヤーがいる場合、インスタンスを生成し2枚ずつカードを引く
+        if ($validatedNumber >= 2) {
+            for ($i = 1; $i < $validatedNumber; $i++) {
+                $this->cpuPlayers[$i] = new CpuPlayer();
+            }
+            foreach ($this->cpuPlayers as $cpuPlayer) {
+                $cpuPlayer->drawCards($this->deck, self::DRAW_TWO);
+            }
         }
 
-        // CPUプレイヤーのカードを表示
-
-
-        // ディーラーのカードを表示
-        echo 'ディーラーの引いたカードは' .
-            $dealerCards[0]->getSuit() . 'の' .
-            $dealerCards[0]->getNumber() . 'です。' . PHP_EOL;
-        echo 'ディーラーの引いた2枚目のカードはわかりません。' . PHP_EOL . PHP_EOL;
-
-        // プレイヤーの合計点
-        echo 'あなたの現在の得点は' .
-            $this->player->getTotalScore() .
-            'です。カードを引きますか？（y/N）' . PHP_EOL;
+        // ディーラーとプレイヤーが2枚ずつカードを引く
+        $this->dealer->drawCards($this->deck, self::DRAW_TWO);
+        $this->player->drawCards($this->deck, self::DRAW_TWO);
     }
 
     /**
      * プレイヤーのターン
-     * TODO: if文の内容をPlayerクラスに以降
+     *
      */
-    private function playerTurn(): void
+    private function playerTurn(): string
     {
         $playerCards = $this->player->drawCards($this->deck, self::DRAW_ONE);
         $playerLastDrawnCard = $playerCards[array_key_last($playerCards)];
         $playerTotalScore = $this->player->getTotalScore();
 
-        echo PHP_EOL .
-            'あなたの引いたカードは' .
-            $playerLastDrawnCard->getSuit() . 'の' .
-            $playerLastDrawnCard->getNumber() . 'です。' . PHP_EOL;
+        $this->message->showPlayerTurnMsg($playerLastDrawnCard, $playerTotalScore);
 
-        if ($playerTotalScore <= 21) { // 合計が21以内の場合は続行
-            echo 'あなたの現在の得点は' .
-                $playerTotalScore .
-                'です。カードを引きますか？（y/N）' . PHP_EOL;
-        } elseif ($playerTotalScore > 21) { // 合計が21を超えたら終了
-            echo 'あなたの現在の得点は' .
-                $playerTotalScore .
-                'です。バーストしました。' . PHP_EOL . PHP_EOL .
-                '残念！あなたの負けです。' . PHP_EOL;
-            exit;
+        // 入力値のバリデーション処理 :TODO: Validatorクラスにうつす
+        // return = $this->validator->validateAnswer(trim(fgets(STDIN)));
+        $inputAnswer = trim(fgets(STDIN));
+        return $this->validateAnswer($inputAnswer);
+    }
+
+    /**
+     * CPUのターン
+     *
+     * @param CpuPlayer $cpuPlayer
+     * @param int       $num
+     */
+    private function cpuTurn(CpuPlayer $cpuPlayer, int $num): void
+    {
+        // 合計が17以上になるまでカードを引き続ける
+        while ($cpuPlayer->getTotalScore() < 17) {
+
+            // CPUプレイヤーがカードを1枚引く
+            $cpuPlayer->drawCards($this->deck, self::DRAW_ONE);
+
+            $cpuLastDrawnCard = $cpuPlayer->getCards()[array_key_last($cpuPlayer->getCards())];
+            $this->message->showCpuDrawnMsg($num, $cpuLastDrawnCard);
         }
     }
 
     /**
      * ディーラーのターン
-     * TODO: while文の内容をDealerクラスに以降
      *
      * @param Card[] $dealerCards
      */
     private function dealerTurn(array $dealerCards): void
     {
-        // ディーラーターンのメッセージを表示
-        $this->showDealerMsg($dealerCards);
+        // ディーラーが引いた2枚目のカードを表示
+        $this->message->showDealerTurnMsg($this->dealer);
 
         // 合計が17以上になるまでカードを引き続ける
         while ($this->dealer->getTotalScore() < 17) {
-            $dealerCards = $this->dealer->drawCards($this->deck, self::DRAW_ONE);
-            $this->showDealerDrawnMsg($dealerCards);
+
+            // ディーラーがカードを1枚引く
+            $this->dealer->drawCards($this->deck, self::DRAW_ONE);
+
+            $dealerLastDrawnCard = $this->dealer->getCards()[array_key_last($this->dealer->getCards())];
+            $this->message->showDealerDrawnMsg($dealerLastDrawnCard);
         }
-    }
-
-    /**
-     * ディーラーターンのメッセージを表示
-     *
-     * @param Card[] $dealerCards
-     */
-    private function showDealerMsg(array $dealerCards): void
-    {
-        echo PHP_EOL .
-            'ディーラーの引いた2枚目のカードは' .
-            $dealerCards[1]->getSuit() . 'の' .
-            $dealerCards[1]->getNumber() . 'でした。' . PHP_EOL .
-            'ディーラーの現在の得点は' .
-            $this->dealer->getTotalScore() . 'です。' . PHP_EOL . PHP_EOL;
-    }
-
-    /**
-     * ディーラーがカードを引くメッセージを表示
-     *
-     * @param Card[] $dealerCards
-     */
-    private function showDealerDrawnMsg(array $dealerCards): void
-    {
-        $dealerLastDrawnCard = $dealerCards[array_key_last($dealerCards)];
-
-        echo PHP_EOL .
-            'ディーラーがカードを引きます。' . PHP_EOL .
-            'ディーラーの引いたカードは' .
-            $dealerLastDrawnCard->getSuit() . 'の' .
-            $dealerLastDrawnCard->getNumber() . 'です。' . PHP_EOL . PHP_EOL;
     }
 
     /**
      * 判定ッセージを表示
      *
-     * @param HandJudger $handJudger
+     * @param  HandJudger $handJudger
      * @return void
      */
     private function showDown(HandJudger $handJudger): void
     {
-        $playerTotalScore = $this->player->getTotalScore();
-        $dealerTotalScore = $this->dealer->getTotalScore();
+        // 扱いやすいように参加者の配列を設定
+        $participants = $this->createParticipantsArray();
 
         // 得点発表
-        echo '判定に移ります。' . PHP_EOL . PHP_EOL .
-            '----- 判定結果 -----' . PHP_EOL .
-            'あなたの得点は' .
-            $playerTotalScore . 'です。' . PHP_EOL .
-            'ディーラーの得点は' .
-            $dealerTotalScore . 'です。' . PHP_EOL . PHP_EOL;
+        $this->message->showTotalScoreMsg($participants);
 
         // 勝敗判定
-        $winnerMsg = $handJudger->determineWinner($playerTotalScore, $dealerTotalScore);
-        echo $winnerMsg . PHP_EOL . PHP_EOL;
+        $results = $handJudger->determineWinner($participants);
+        $this->message->showJudgmentMsg($results);
 
         // ゲームを終了する
-        echo 'ブラックジャックを終了します。' . PHP_EOL;
+        $this->message->showExitMsg();
         exit;
     }
 
     /**
-     * 入力値のバリデーション処理
+     * 参加者を扱いやすいように配列にまとめる
      *
-     * @param string  $stdin
-     * @return string $validatedStdin 'y' or 'N'
+     * @return array $participants
+     */
+    private function createParticipantsArray(): array
+    {
+        $participants = [
+            'dealer' => ['name' => 'ディーラー', 'total' => $this->dealer->getTotalScore()],
+            'you'    => ['name' => 'あなた',     'total' => $this->player->getTotalScore()],
+        ];
+
+        // CPUが一人の場合$numは1、CPUが二人の場合$numは1と2
+        foreach ($this->cpuPlayers as $num => $cpuPlayer) {
+            $participants[$num] = ['name' => 'CPUプレイヤー' . $num, 'total' => $cpuPlayer->getTotalScore()];
+        }
+
+        return $participants;
+    }
+
+    /**
+     * 入力値('y' or 'N')のバリデーション処理
+     *
+     * @param  string $inputAnswer
+     * @return string $inputAnswer validated 'y' or 'N'
      */
     private function validateInput(string $stdin): string
     {
         while (!($stdin === 'y' || $stdin === 'N')) {
             echo PHP_EOL .
                 'yまたはNを入力してください。' . PHP_EOL;
-
-            $stdin = trim(fgets(STDIN));
         }
-        return $stdin;
+    }
+
+    /**
+     * 入力値(プレイヤーの人数)のバリデーション処理
+     *
+     * @param  string $inputNumber
+     * @return int    $inputNumber validated 1~3
+     */
+    private function validateNumber($inputNumber): int
+    {
+        $num = [1, 2, 3];
+
+        while (!(in_array($inputNumber, $num))) {
+            echo PHP_EOL .
+                '1~3の数値を入力してください。' . PHP_EOL;
+            $inputNumber = trim(fgets(STDIN));
+        }
+        return $inputNumber;
     }
 }

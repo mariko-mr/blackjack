@@ -10,12 +10,8 @@ class Dealer
      * @var int    $aceReductionCount
      */
     private array $dealerCards;
-    private int $dealerTotalScore;
-
-    /**
-     * ここを追加
-     */
-    private int $aceReductionCount;
+    private int   $dealerTotalScore;
+    private int   $aceReductionCount;
 
     /**
      * ここを追加
@@ -31,8 +27,8 @@ class Dealer
     /**
      * デッキからカードを引いて持ち札に加え、合計点を更新する
      *
-     * @param Deck $deck
-     * @param int $drawNum
+     * @param  Deck $deck
+     * @param  int  $drawNum
      * @return Card[]
      */
     public function drawCards(Deck $deck, int $drawNum): array
@@ -49,6 +45,16 @@ class Dealer
     }
 
     /**
+     * ディーラーのカードを取得
+     *
+     * @return array
+     */
+    public function getCards(): array
+    {
+        return $this->dealerCards;
+    }
+
+    /**
      * ディーラーの合計点を取得
      *
      * @return int
@@ -61,7 +67,7 @@ class Dealer
     /**
      * ディーラーの合計点を更新
      *
-     * @param Card[] $drawnCards
+     * @param  Card[] $drawnCards
      * @return int
      */
     private function updateTotalScore(array $drawnCards): int

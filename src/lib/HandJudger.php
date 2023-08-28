@@ -4,18 +4,68 @@ namespace Blackjack;
 
 class HandJudger
 {
-    public function determineWinner(int $playerTotalScore, int $dealerTotalScore): string
+    /**
+     * 勝者を決定する
+     *
+     * @param  array $participants
+     * @return array $results [['participant' => 'result'], ...]
+     */
+    public function determineWinner($participants): array
     {
-        if ($dealerTotalScore > 21) {
-            return 'ディーラーはバーストしました。あなたの勝ちです！';
+        $results = [];
+
+        // totalが21を超えた参加者はバースト
+        foreach ($participants as $key => $participant) {
+            if ($participant['total'] > 21) {
+                $results[$participant['name']] = 'バースト';
+
+                // バーストした人を$participantsから除く
+                unset($participants[$key]);
+            }
         }
 
-        if ($dealerTotalScore === $playerTotalScore) {
-            return '同点でした。この勝負は引き分けとします。';
-        } elseif ($playerTotalScore > $dealerTotalScore) {
-            return 'あなたの勝ちです！';
-        } elseif ($playerTotalScore < $dealerTotalScore) {
-            return 'ディーラーの勝ちです。残念！';
+        // ディーラーがバーストしている場合、残った参加者は勝ち
+        if (!isset($participants['dealer'])) {
+            foreach ($participants as $key => $participant) {
+                $results[$participant['name']] = '勝ち';
+            }
+            return $results;
         }
+
+        // ディーラーがバーストしてない場合
+        foreach ($participants as $key => $participant) {
+            if ($this->isTie($participants, $participant)) {   // ディーラーと同点なら引き分け
+                $results[$participant['name']] = '引き分け';
+            } elseif ($this->isHigherScore($participants, $participant)) { // ディーラーより高得点なら勝ち
+                $results[$participant['name']] = '勝ち';
+            } else {
+                $results[$participant['name']] = '負け';
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * ディーラーと同点か調べる
+     *
+     * @param  array $participants
+     * @param  array $participant
+     * @return bool
+     */
+    private function isTie(array $participants, array $participant): bool
+    {
+        return $participant['total'] === $participants['dealer']['total'];
+    }
+
+    /**
+     * ディーラーより高得点か調べる
+     *
+     * @param  array $participants
+     * @param  array $participant
+     * @return bool
+     */
+    private function isHigherScore(array $participants, array $participant): bool
+    {
+        return $participant['total'] > $participants['dealer']['total'];
     }
 }
