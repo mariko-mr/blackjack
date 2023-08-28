@@ -60,14 +60,14 @@ class BlackjackGame
      */
     private function setupGame(): void
     {
-        echo 'CPUプレイヤーの人数(0人~2人)を選択してください(0~2の数値を入力)' . PHP_EOL;
+        echo 'プレイヤーの人数(1人~3人)を選択してください(1~3の数値を入力)' . PHP_EOL;
 
         // 入力値のバリデーション処理
-        $validatedCpuNumber = $this->validateCpuNumber(trim(fgets(STDIN)));
+        $validatedNumber = $this->validateNumber(trim(fgets(STDIN)));
 
         // CPUプレイヤーがいる場合、インスタンスを生成し2枚ずつカードを引く
-        if ($validatedCpuNumber >= 1) {
-            for ($i = 1; $i <= $validatedCpuNumber; $i++) {
+        if ($validatedNumber >= 2) {
+            for ($i = 1; $i < $validatedNumber; $i++) {
                 $this->cpuPlayers[$i] = new CpuPlayer();
             }
             foreach ($this->cpuPlayers as $cpuPlayer) {
@@ -242,17 +242,16 @@ class BlackjackGame
      */
     private function showDown(HandJudger $handJudger): void
     {
+        // 扱いやすいように配列を設定
         $participants = [
-            0 => ['name' => 'あなた', 'total' => $this->player->getTotalScore()],
-            3 => ['name' => 'ディーラー', 'total' => $this->dealer->getTotalScore()],
+            'dealer' => ['name' => 'ディーラー', 'total' => $this->dealer->getTotalScore()],
+            'you'    => ['name' => 'あなた',     'total' => $this->player->getTotalScore()],
         ];
 
+        // CPUが一人の場合$numは1、CPUが二人の場合$numは1と2
         foreach ($this->cpuPlayers as $num => $cpuPlayer) {
             $participants[$num] = ['name' => 'CPUプレイヤー' . $num, 'total' => $cpuPlayer->getTotalScore()];
         }
-
-        // あなた-CPU1-CPU2-ディーラー の順になるように並び替え
-        ksort($participants);
 
         // 得点発表
         echo  PHP_EOL .
@@ -265,9 +264,10 @@ class BlackjackGame
         }
 
         // 勝敗判定
-        $winnerMsg = $handJudger->determineWinner($participants);
-        echo '--------------------------' . PHP_EOL .
-            $winnerMsg . PHP_EOL . PHP_EOL;
+        $results = $handJudger->determineWinner($participants);
+        // echo '--------------------------' . PHP_EOL .
+        // $winnerMsg . PHP_EOL . PHP_EOL;
+        var_dump($results);
 
         // ゲームを終了する
         echo 'ブラックジャックを終了します。' . PHP_EOL;
@@ -291,18 +291,18 @@ class BlackjackGame
     }
 
     /**
-     * 入力値(CPUの人数)のバリデーション処理
+     * 入力値(プレイヤーの人数)のバリデーション処理
      *
      * @param string $inputNumber
-     * @return int   $inputNumber validated 0~2
+     * @return int   $inputNumber validated 1~3
      */
-    private function validateCpuNumber($inputNumber): int
+    private function validateNumber($inputNumber): int
     {
-        $cpuNum = [0, 1, 2];
+        $num = [1, 2, 3];
 
-        while (!(in_array($inputNumber, $cpuNum))) {
+        while (!(in_array($inputNumber, $num))) {
             echo PHP_EOL .
-                '0~2の数値を入力してください。' . PHP_EOL;
+                '1~3の数値を入力してください。' . PHP_EOL;
             $inputNumber = trim(fgets(STDIN));
         }
         return $inputNumber;
