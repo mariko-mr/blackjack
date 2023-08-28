@@ -13,6 +13,9 @@ class Dealer
     private int   $dealerTotalScore;
     private int   $aceReductionCount;
 
+    /**
+     * ここを追加
+     */
     public function __construct()
     {
         // 初期化処理
