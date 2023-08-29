@@ -18,4 +18,4 @@ $validator = new Validator();
 $handJudger = new HandJudger();
 
 $game = new BlackjackGame($deck, $player, $dealer, $message, $validator, $handJudger);
-$game->startGame();
+$game->playGame();

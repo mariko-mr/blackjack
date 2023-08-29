@@ -7,10 +7,20 @@ require_once __DIR__ . ('/CpuPlayer.php');
 class BlackjackGame
 {
     /**
-     * @var array $cpuPlayer
+     * ゲーム開始時にデッキから引くカードの枚数
      */
     private const DRAW_TWO = 2;
+
+    /**
+     * 各自のターンにデッキから引くカードの枚数
+     */
     private const DRAW_ONE = 1;
+
+    /**
+     * CpuPlayerの設定人数による配列
+     *
+     * @var CpuPlayer[]
+     */
     private array $cpuPlayers;
 
     public function __construct(
@@ -26,34 +36,40 @@ class BlackjackGame
     }
 
     /**
-     * ブラックジャックゲームを開始
+     * ブラックジャックゲームの一連の流れを管理
      *
      */
-    public function startGame(): void
+    public function playGame(): void
     {
-        // ゲームの設定をする
         $this->setupGame();
+        $this->startGame();
+        $this->showDown($this->handJudger);
+        $this->quitGame();
+    }
 
+    /**
+     * ゲームをスタート
+     *
+     */
+    private function startGame(): void
+    {
         // スタート時のメッセージを表示
         $this->message->showStartMsg($this->player, $this->cpuPlayers, $this->dealer);
-        $validatedAnswer = $this->validator->validateYesNoAnswer(trim(fgets(STDIN)));
+        $validatedAnswer = $this->validator->validateYesNoAnswer(trim(fgets(STDIN)), $this->message);
 
         // プレイヤーがカードを引くターン
         while ($validatedAnswer === 'y') {
             $validatedAnswer = $this->playerTurn();
         }
 
-        // CPUプレイヤーとディーラーがカードを引くターン
         if ($validatedAnswer === 'N') {
+            // CPUプレイヤーがカードを引くターン
             foreach ($this->cpuPlayers as $num => $cpuPlayer) {
                 $this->cpuTurn($cpuPlayer, $num);
             }
-
+            // ディーラーがカードを引くターン
             $this->dealerTurn();
         }
-
-        // 判定して終了する
-        $this->showDown($this->handJudger);
     }
 
     /**
@@ -64,7 +80,7 @@ class BlackjackGame
     {
         // 設定メッセージを表示
         $this->message->showSetupMsg();
-        $validatedNumber = $this->validator->validateNumberAnswer(trim(fgets(STDIN)));
+        $validatedNumber = $this->validator->validateNumberAnswer(trim(fgets(STDIN)), $this->message);
 
         // CPUプレイヤーがいる場合、インスタンスを生成し2枚ずつカードを引く
         if ($validatedNumber >= 2) {
@@ -96,7 +112,7 @@ class BlackjackGame
         $this->message->showPlayerTurnMsg($playerLastDrawnCard, $playerTotalScore);
 
         // メッセージへの入力をバリデーション処理して返す(y or N)
-        return $this->validator->validateYesNoAnswer(trim(fgets(STDIN)));
+        return $this->validator->validateYesNoAnswer(trim(fgets(STDIN)), $this->message);
     }
 
     /**
@@ -127,7 +143,8 @@ class BlackjackGame
         // ディーラーが引いた2枚目のカードを表示
         $this->message->showDealerTurnMsg($this->dealer);
 
-        // 合計が17以上になるまでカードを引き続ける
+        // 合計が17以上になるまでカードを引き続ける :TODO: ルールクラスに修正
+        // while($this->dealerRule->)
         while ($this->dealer->getTotalScore() < 17) {
 
             // ディーラーがカードを1枚引く
@@ -139,10 +156,9 @@ class BlackjackGame
     }
 
     /**
-     * ゲーム結果を判定して終了する
+     * ゲーム結果を判定
      *
      * @param  HandJudger $handJudger
-     * @return void
      */
     private function showDown(HandJudger $handJudger): void
     {
@@ -155,8 +171,14 @@ class BlackjackGame
         // 勝敗判定
         $results = $handJudger->determineWinner($participants);
         $this->message->showJudgmentMsg($results);
+    }
 
-        // ゲームを終了する
+    /**
+     * ゲームを終了
+     *
+     */
+    private function quitGame(): void
+    {
         $this->message->showExitMsg();
         exit;
     }
