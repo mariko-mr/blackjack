@@ -18,6 +18,7 @@ class BlackjackGame
         private HumPlayer $player,
         private Dealer $dealer,
         private Message $message,
+        private Validator $validator,
         private HandJudger $handJudger,
     ) {
         // 初期化処理
@@ -35,11 +36,7 @@ class BlackjackGame
 
         // スタート時のメッセージを表示
         $this->message->showStartMsg($this->player, $this->cpuPlayers, $this->dealer);
-        // $validatedAnswer = $this->validator->validateAnswer(trim(fgets(STDIN)));
-        
-        // 入力値のバリデーション処理 :TODO: Validatorクラスにうつす
-        $inputAnswer = trim(fgets(STDIN));
-        $validatedAnswer = $this->validateAnswer($inputAnswer);
+        $validatedAnswer = $this->validator->validateYesNoAnswer(trim(fgets(STDIN)));
 
         // プレイヤーがカードを引くターン
         while ($validatedAnswer === 'y') {
@@ -65,10 +62,9 @@ class BlackjackGame
      */
     private function setupGame(): void
     {
+        // 設定メッセージを表示
         $this->message->showSetupMsg();
-
-        // 入力値のバリデーション処理 :TODO: Validatorクラスにうつす
-        $validatedNumber = $this->validateNumber(trim(fgets(STDIN)));
+        $validatedNumber = $this->validator->validateNumberAnswer(trim(fgets(STDIN)));
 
         // CPUプレイヤーがいる場合、インスタンスを生成し2枚ずつカードを引く
         if ($validatedNumber >= 2) {
@@ -99,10 +95,8 @@ class BlackjackGame
 
         $this->message->showPlayerTurnMsg($playerLastDrawnCard, $playerTotalScore);
 
-        // 入力値のバリデーション処理 :TODO: Validatorクラスにうつす
-        // return = $this->validator->validateAnswer(trim(fgets(STDIN)));
-        $inputAnswer = trim(fgets(STDIN));
-        return $this->validateAnswer($inputAnswer);
+        // メッセージへの入力をバリデーション処理して返す(y or N)
+        return $this->validator->validateYesNoAnswer(trim(fgets(STDIN)));
     }
 
     /**
@@ -145,7 +139,7 @@ class BlackjackGame
     }
 
     /**
-     * 判定ッセージを表示
+     * ゲーム結果を判定して終了する
      *
      * @param  HandJudger $handJudger
      * @return void
@@ -185,39 +179,5 @@ class BlackjackGame
         }
 
         return $participants;
-    }
-
-    /**
-     * 入力値('y' or 'N')のバリデーション処理
-     *
-     * @param  string $inputAnswer
-     * @return string $inputAnswer validated 'y' or 'N'
-     */
-    private function validateAnswer(string $inputAnswer): string
-    {
-        while (!($inputAnswer === 'y' || $inputAnswer === 'N')) {
-            echo PHP_EOL .
-                'yまたはNを入力してください。' . PHP_EOL;
-            $inputAnswer = trim(fgets(STDIN));
-        }
-        return $inputAnswer;
-    }
-
-    /**
-     * 入力値(プレイヤーの人数)のバリデーション処理
-     *
-     * @param  string $inputNumber
-     * @return int    $inputNumber validated 1~3
-     */
-    private function validateNumber($inputNumber): int
-    {
-        $num = [1, 2, 3];
-
-        while (!(in_array($inputNumber, $num))) {
-            echo PHP_EOL .
-                '1~3の数値を入力してください。' . PHP_EOL;
-            $inputNumber = trim(fgets(STDIN));
-        }
-        return $inputNumber;
     }
 }
