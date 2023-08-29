@@ -187,4 +187,24 @@ class Message
     {
         echo 'ブラックジャックを終了します。' . PHP_EOL;
     }
+
+    /**
+     * yes or NO 入力時のメッセージを表示
+     *
+     */
+    public function showValidateYesNoErrorMsg(): void
+    {
+        echo PHP_EOL .
+            'yまたはNを入力してください。' . PHP_EOL;
+    }
+
+    /**
+     * CPUプレイヤー人数入力時のメッセージを表示
+     *
+     */
+    public function showValidateNumberErrorMsg(): void
+    {
+        echo PHP_EOL .
+            '1~3の数値を入力してください。' . PHP_EOL;
+    }
 }
