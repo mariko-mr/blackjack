@@ -14,7 +14,7 @@ class HandJudger
     {
         $results = [];
 
-        // totalが21を超えた参加者はバースト
+        // totalが21を超えた参加者はバースト TODO: ルールをルールクラスに委譲
         foreach ($participants as $key => $participant) {
             if ($participant['total'] > 21) {
                 $results[$participant['name']] = 'バースト';

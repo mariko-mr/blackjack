@@ -5,20 +5,19 @@ namespace Blackjack;
 class HumPlayer
 {
     /**
-     * @var Card[] $playerCards
-     * @var int    $playerTotalScore
-     * @var int    $aceReductionCount
+     * @var Card[] プレイヤーの持ち札
+     * @var int    プレイヤーの総得点
      */
     private array $playerCards;
     private int   $playerTotalScore;
-    private int   $aceReductionCount;
 
-    public function __construct()
-    {
+    public function __construct(
+        private HumPlayerRule $playerRule,
+        private AceRule $aceRule
+    ) {
         // 初期化処理
         $this->playerCards = [];
         $this->playerTotalScore = 0;
-        $this->aceReductionCount = 0;
     }
 
     /**
@@ -62,6 +61,11 @@ class HumPlayer
     }
 
     /**
+     * ここを修正
+     *
+     * Aルールによる減算をAceRuleクラスに委譲
+     */
+    /**
      * プレイヤーの合計点を更新
      *
      * @param  Card[] $drawnCards
@@ -74,52 +78,9 @@ class HumPlayer
             $this->playerTotalScore += $drawnCard->getScore();
         }
 
-        // 合計21を超え、Aがあれば得点を減算して調整
-        if ($this->playerTotalScore > 21 && $this->hasAce()) {
-            $this->reduceScoreWithAce();
-        }
+        // Aルールによる減算分を取得
+        $aceSubtraction = $this->aceRule->subtractAceScore($this->playerRule, $this->playerTotalScore, $this->playerCards);
 
-        return $this->playerTotalScore;
-    }
-
-    /**
-     * $playerCardsにAが含まれるかを調べる
-     *
-     * @return bool
-     */
-    private function hasAce(): bool
-    {
-        foreach ($this->playerCards as $playerCard) {
-            if ($playerCard->getNumber() == 'A') {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Aの得点を11から1へと減算する
-     *
-     * @return void
-     */
-    private function reduceScoreWithAce(): void
-    {
-        // Aの出現回数を計算
-        $aceCount = 0;
-        foreach ($this->playerCards as $playerCard) {
-            if ($playerCard->getNumber() == 'A') {
-                $aceCount++;
-            }
-        }
-
-        // Aの出現回数以上に減算しないように条件を設定
-        while ($this->playerTotalScore > 21 && $aceCount > $this->aceReductionCount) {
-            // Aの得点分を減算
-            $this->playerTotalScore -= 10;
-
-            // Aによる減算回数をカウント
-            $this->aceReductionCount++;
-        }
+        return $this->playerTotalScore - $aceSubtraction;
     }
 }

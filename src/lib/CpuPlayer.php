@@ -5,20 +5,19 @@ namespace Blackjack;
 class CpuPlayer
 {
     /**
-     * @var Card[] $cpuCards
-     * @var int    $cpuTotalScore
-     * @var int    $aceReductionCount
+     * @var Card[] CPUプレイヤーの持ち札
+     * @var int    CPUプレイヤーの総得点
      */
     private array $cpuCards;
     private int   $cpuTotalScore;
-    private int   $aceReductionCount;
 
-    public function __construct()
-    {
+    public function __construct(
+        private CpuPlayerRule $cpuPlayerRule,
+        private AceRule $aceRule
+    ) {
         // 初期化処理
         $this->cpuCards = [];
         $this->cpuTotalScore = 0;
-        $this->aceReductionCount = 0;
     }
 
     /**
@@ -62,6 +61,11 @@ class CpuPlayer
     }
 
     /**
+     * ここを修正
+     *
+     * Aルールによる減算をAceRuleクラスに委譲
+     */
+    /**
      * CPUプレイヤーの合計点を更新
      *
      * @param  Card[] $drawnCards
@@ -74,52 +78,9 @@ class CpuPlayer
             $this->cpuTotalScore += $drawnCard->getScore();
         }
 
-        // 合計21を超え、Aがあれば得点を減算して調整
-        if ($this->cpuTotalScore > 21 && $this->hasAce()) {
-            $this->reduceScoreWithAce();
-        }
+        // Aルールによる減算分を取得
+        $aceSubtraction = $this->aceRule->subtractAceScore($this->cpuPlayerRule, $this->cpuTotalScore, $this->cpuCards);
 
-        return $this->cpuTotalScore;
-    }
-
-    /**
-     * $cpuCardsにAが含まれるかを調べる
-     *
-     * @return bool
-     */
-    private function hasAce(): bool
-    {
-        foreach ($this->cpuCards as $cpuCard) {
-            if ($cpuCard->getNumber() == 'A') {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Aの得点を11から1へと減算する
-     *
-     * @return void
-     */
-    private function reduceScoreWithAce(): void
-    {
-        // Aの出現回数を計算
-        $aceCount = 0;
-        foreach ($this->cpuCards as $cpuCard) {
-            if ($cpuCard->getNumber() == 'A') {
-                $aceCount++;
-            }
-        }
-
-        // Aの出現回数以上に減算しないように条件を設定
-        while ($this->cpuTotalScore > 21 && $aceCount > $this->aceReductionCount) {
-            // Aの得点分を減算
-            $this->cpuTotalScore -= 10;
-
-            // Aによる減算回数をカウント
-            $this->aceReductionCount++;
-        }
+        return $this->cpuTotalScore - $aceSubtraction;
     }
 }

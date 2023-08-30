@@ -58,6 +58,11 @@ class Message
     }
 
     /**
+     * ここを修正
+     *
+     * バーストする条件をHumPlayerRuleに委譲
+     */
+    /**
      * プレイヤーターンのメッセージを表示
      *
      * @param Card $playerLastDrawnCard
@@ -70,17 +75,19 @@ class Message
             $playerLastDrawnCard->getSuit() . 'の' .
             $playerLastDrawnCard->getNumber() . 'です。' . PHP_EOL;
 
-        if ($playerTotalScore <= 21) { // 合計が21以内の場合は続行
-            echo 'あなたの現在の得点は' .
-                $playerTotalScore .
-                'です。カードを引きますか？（y/N）' . PHP_EOL;
-        } elseif ($playerTotalScore > 21) { // 合計が21を超えたら終了
+        // 合計が21を超えたら終了
+        if (HumPlayerRule::isBust($playerTotalScore)) {
             echo 'あなたの現在の得点は' .
                 $playerTotalScore .
                 'です。バーストしました。' . PHP_EOL . PHP_EOL .
                 '残念！あなたの負けです。' . PHP_EOL;
             exit;
         }
+
+        // 合計が21以内の場合は続行
+        echo 'あなたの現在の得点は' .
+            $playerTotalScore .
+            'です。カードを引きますか？（y/N）' . PHP_EOL;
     }
 
     /**

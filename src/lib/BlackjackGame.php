@@ -3,6 +3,8 @@
 namespace Blackjack;
 
 require_once __DIR__ . ('/CpuPlayer.php');
+require_once __DIR__ . ('/CpuPlayerRule.php');
+require_once __DIR__ . ('/AceRule.php');
 
 class BlackjackGame
 {
@@ -73,6 +75,11 @@ class BlackjackGame
     }
 
     /**
+     * ここを修正
+     *
+     * CPUプレイヤーインスタンスに引き数を追加
+     */
+    /**
      * 開始時のゲーム設定
      *
      */
@@ -85,7 +92,7 @@ class BlackjackGame
         // CPUプレイヤーがいる場合、インスタンスを生成し2枚ずつカードを引く
         if ($validatedNumber >= 2) {
             for ($i = 1; $i < $validatedNumber; $i++) {
-                $this->cpuPlayers[$i] = new CpuPlayer();
+                $this->cpuPlayers[$i] = new CpuPlayer(new CpuPlayerRule, new AceRule);
             }
             foreach ($this->cpuPlayers as $cpuPlayer) {
                 $cpuPlayer->drawCards($this->deck, self::DRAW_TWO);
@@ -116,6 +123,11 @@ class BlackjackGame
     }
 
     /**
+     * ここを修正
+     *
+     * カードを引き続ける条件をCpuPlayerRuleに委譲
+     */
+    /**
      * CPUのターン
      *
      * @param CpuPlayer $cpuPlayer
@@ -124,7 +136,7 @@ class BlackjackGame
     private function cpuTurn(CpuPlayer $cpuPlayer, int $num): void
     {
         // 合計が17以上になるまでカードを引き続ける
-        while ($cpuPlayer->getTotalScore() < 17) {
+        while (CpuPlayerRule::shouldDrawCard($cpuPlayer)) {
 
             // CPUプレイヤーがカードを1枚引く
             $cpuPlayer->drawCards($this->deck, self::DRAW_ONE);
@@ -135,6 +147,11 @@ class BlackjackGame
     }
 
     /**
+     * ここを修正
+     *
+     * カードを引き続ける条件をDealerRuleに委譲
+     */
+    /**
      * ディーラーのターン
      *
      */
@@ -143,9 +160,8 @@ class BlackjackGame
         // ディーラーが引いた2枚目のカードを表示
         $this->message->showDealerTurnMsg($this->dealer);
 
-        // 合計が17以上になるまでカードを引き続ける :TODO: ルールクラスに修正
-        // while($this->dealerRule->)
-        while ($this->dealer->getTotalScore() < 17) {
+        // 合計が17以上になるまでカードを引き続ける
+        while (DealerRule::shouldDrawCard($this->dealer)) {
 
             // ディーラーがカードを1枚引く
             $this->dealer->drawCards($this->deck, self::DRAW_ONE);

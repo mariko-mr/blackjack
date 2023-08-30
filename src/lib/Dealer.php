@@ -5,20 +5,19 @@ namespace Blackjack;
 class Dealer
 {
     /**
-     * @var Card[] $dealerCards
-     * @var int    $dealerTotalScore
-     * @var int    $aceReductionCount
+     * @var Card[] ディーラーの持ち札
+     * @var int    ディーラーの総得点
      */
     private array $dealerCards;
     private int   $dealerTotalScore;
-    private int   $aceReductionCount;
 
-    public function __construct()
-    {
+    public function __construct(
+        private DealerRule $dealerRule,
+        private AceRule $aceRule
+    ) {
         // 初期化処理
         $this->dealerCards = [];
         $this->dealerTotalScore = 0;
-        $this->aceReductionCount = 0;
     }
 
     /**
@@ -62,6 +61,11 @@ class Dealer
     }
 
     /**
+     * ここを修正
+     *
+     * Aルールによる減算をAceRuleクラスに委譲
+     */
+    /**
      * ディーラーの合計点を更新
      *
      * @param  Card[] $drawnCards
@@ -74,52 +78,9 @@ class Dealer
             $this->dealerTotalScore += $drawnCard->getScore();
         }
 
-        // 合計21を超え、Aがあれば得点を減算して調整
-        if ($this->dealerTotalScore > 21 && $this->hasAce()) {
-            $this->reduceScoreWithAce();
-        }
+        // Aルールによる減算分を取得
+        $aceSubtraction = $this->aceRule->subtractAceScore($this->dealerRule, $this->dealerTotalScore, $this->dealerCards);
 
-        return $this->dealerTotalScore;
-    }
-
-    /**
-     * $dealerCardsにAが含まれるかを調べる
-     *
-     * @return bool
-     */
-    private function hasAce(): bool
-    {
-        foreach ($this->dealerCards as $dealerCard) {
-            if ($dealerCard->getNumber() == 'A') {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Aの得点を11から1へと減算する
-     *
-     * @return void
-     */
-    private function reduceScoreWithAce(): void
-    {
-        // Aの出現回数を計算
-        $aceCount = 0;
-        foreach ($this->dealerCards as $dealerCard) {
-            if ($dealerCard->getNumber() == 'A') {
-                $aceCount++;
-            }
-        }
-
-        // Aの出現回数以上に減算しないように条件を設定
-        while ($this->dealerTotalScore > 21 && $aceCount > $this->aceReductionCount) {
-            // Aの得点分を減算
-            $this->dealerTotalScore -= 10;
-
-            // Aによる減算回数をカウント
-            $this->aceReductionCount++;
-        }
+        return $this->dealerTotalScore - $aceSubtraction;
     }
 }
