@@ -1,6 +1,13 @@
 <?php
 
-namespace Blackjack;
+namespace Blackjack\Participants;
+
+require_once(__DIR__ . '/../Rule/CpuPlayerRule.php');
+require_once(__DIR__ . '/../Rule/AceRule.php');
+
+use Blackjack\Rule\CpuPlayerRule;
+use Blackjack\Rule\AceRule;
+use Blackjack\Deck;
 
 class CpuPlayer
 {
@@ -25,9 +32,9 @@ class CpuPlayer
      *
      * @param  Deck $deck
      * @param  int  $drawNum
-     * @return Card[]
+     * @return void
      */
-    public function drawCards(Deck $deck, int $drawNum): array
+    public function drawCards(Deck $deck, int $drawNum): void
     {
         $drawnCards = $deck->drawCards($drawNum);
 
@@ -35,9 +42,7 @@ class CpuPlayer
         $this->cpuCards = array_merge($this->cpuCards, $drawnCards);
 
         // 合計点を更新する
-        $this->cpuTotalScore = $this->updateTotalScore($drawnCards);
-
-        return $this->cpuCards;
+        $this->cpuTotalScore = $this->updateTotalScore($this->cpuCards);
     }
 
     /**
@@ -61,6 +66,17 @@ class CpuPlayer
     }
 
     /**
+     * ここを追加
+     *
+     * @param  int $cpuTotalScore
+     * @return bool
+     */
+    public function isBust(int $cpuTotalScore): bool
+    {
+        return $this->cpuPlayerRule->isBust($cpuTotalScore);
+    }
+
+    /**
      * ここを修正
      *
      * Aルールによる減算をAceRuleクラスに委譲
@@ -71,16 +87,16 @@ class CpuPlayer
      * @param  Card[] $drawnCards
      * @return int
      */
-    private function updateTotalScore(array $drawnCards): int
+    private function updateTotalScore(array $cpuCards): int
     {
-        // 引いたカードをそれぞれ合計点に合算する
-        foreach ($drawnCards as $drawnCard) {
-            $this->cpuTotalScore += $drawnCard->getScore();
+        $this->cpuTotalScore = 0;
+
+        // カードを引くたび合計点をイチから再計算
+        foreach ($cpuCards as $cpuCard) {
+            $this->cpuTotalScore += $cpuCard->getScore();
         }
 
-        // Aルールによる減算分を取得
-        $aceSubtraction = $this->aceRule->subtractAceScore($this->cpuPlayerRule, $this->cpuTotalScore, $this->cpuCards);
-
-        return $this->cpuTotalScore - $aceSubtraction;
+        // Aルールによる減算
+        return $this->aceRule->subtractAceScore($this->cpuPlayerRule, $this->cpuTotalScore, $this->cpuCards);
     }
 }

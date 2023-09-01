@@ -1,6 +1,13 @@
 <?php
 
-namespace Blackjack;
+namespace Blackjack\Participants;
+
+require_once(__DIR__ . '/../Rule/HumPlayerRule.php');
+require_once(__DIR__ . '/../Rule/AceRule.php');
+
+use Blackjack\Rule\HumPlayerRule;
+use Blackjack\Rule\AceRule;
+use Blackjack\Deck;
 
 class HumPlayer
 {
@@ -27,17 +34,27 @@ class HumPlayer
      * @param  int  $drawNum
      * @return Card[]
      */
-    public function drawCards(Deck $deck, int $drawNum): array
+    public function drawCards(Deck $deck, int $drawNum): void
     {
+        // $drawnCards = $deck->drawCards($drawNum);
+
+        // // 引いたカードを持ち札に加える
+        // $this->playerCards = array_merge($this->playerCards, $drawnCards);
+
+        // // 合計点を更新する
+        // $this->playerTotalScore = $this->updateTotalScore($drawnCards);
+
+        // return $this->playerCards;
+
+
+
         $drawnCards = $deck->drawCards($drawNum);
 
         // 引いたカードを持ち札に加える
         $this->playerCards = array_merge($this->playerCards, $drawnCards);
 
         // 合計点を更新する
-        $this->playerTotalScore = $this->updateTotalScore($drawnCards);
-
-        return $this->playerCards;
+        $this->playerTotalScore = $this->updateTotalScore($this->playerCards);
     }
 
     /**
@@ -61,6 +78,17 @@ class HumPlayer
     }
 
     /**
+     * ここを追加
+     *
+     * @param  int $playerTotalScore
+     * @return bool
+     */
+    public function isBust(int $playerTotalScore): bool
+    {
+        return $this->playerRule->isBust($playerTotalScore);
+    }
+
+    /**
      * ここを修正
      *
      * Aルールによる減算をAceRuleクラスに委譲
@@ -71,16 +99,16 @@ class HumPlayer
      * @param  Card[] $drawnCards
      * @return int
      */
-    private function updateTotalScore(array $drawnCards): int
+    private function updateTotalScore(array $playerCards): int
     {
-        // 引いたカードをそれぞれ合計点に合算する
-        foreach ($drawnCards as $drawnCard) {
-            $this->playerTotalScore += $drawnCard->getScore();
+        $this->playerTotalScore = 0;
+
+        // カードを引くたび合計点をイチから再計算
+        foreach ($playerCards as $playerCard) {
+            $this->playerTotalScore += $playerCard->getScore();
         }
 
-        // Aルールによる減算分を取得
-        $aceSubtraction = $this->aceRule->subtractAceScore($this->playerRule, $this->playerTotalScore, $this->playerCards);
-
-        return $this->playerTotalScore - $aceSubtraction;
+        // Aルールによる減算
+        return $this->aceRule->subtractAceScore($this->playerRule, $this->playerTotalScore, $this->playerCards);
     }
 }
