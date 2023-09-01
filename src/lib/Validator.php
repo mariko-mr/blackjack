@@ -5,7 +5,7 @@ namespace Blackjack;
 class Validator
 {
     /**
-     * 入力値('y' or 'N')のバリデーション処理
+     * 入力値(y or N)のバリデーション処理
      *
      * @param  string $answer
      * @return string $answer validated 'y' or 'N'

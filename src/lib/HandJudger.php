@@ -16,7 +16,7 @@ class HandJudger
 
         // totalが21を超えた参加者はバースト TODO: ルールをルールクラスに委譲
         foreach ($participants as $key => $participant) {
-            if ($participant['total'] > 21) {
+            if ($participant['obj']->isBust($participant['total'])) {
                 $results[$participant['name']] = 'バースト';
 
                 // バーストした人を$participantsから除く

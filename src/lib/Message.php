@@ -2,6 +2,10 @@
 
 namespace Blackjack;
 
+use Blackjack\Participants\HumPlayer;
+use Blackjack\Participants\Dealer;
+use Blackjack\Participants\CpuPlayer;
+
 class Message
 {
     /**
@@ -16,9 +20,9 @@ class Message
     /**
      * 開始時のメッセージを表示
      *
-     * @param HumPlayer $player
+     * @param \Participants\HumPlayer $player
      * @param array     $cpuPlayers
-     * @param Dealer    $dealer
+     * @param Participants\Dealer    $dealer
      */
     public function showStartMsg(HumPlayer $player, array $cpuPlayers, Dealer $dealer): void
     {
@@ -61,22 +65,25 @@ class Message
      * ここを修正
      *
      * バーストする条件をHumPlayerRuleに委譲
+     * $playerLastDrawnCard, $playerTotalScoreをBlackjackGameクラスから移行
      */
     /**
      * プレイヤーターンのメッセージを表示
      *
-     * @param Card $playerLastDrawnCard
-     * @param int  $playerTotalScore
+     * @param HumPlayer $player
      */
-    public function showPlayerTurnMsg(Card $playerLastDrawnCard, int $playerTotalScore): void
+    public function showPlayerTurnMsg(HumPlayer $player): void
     {
+        $playerLastDrawnCard = $player->getCards()[array_key_last($player->getCards())];
+        $playerTotalScore = $player->getTotalScore();
+
         echo PHP_EOL .
             'あなたの引いたカードは' .
             $playerLastDrawnCard->getSuit() . 'の' .
             $playerLastDrawnCard->getNumber() . 'です。' . PHP_EOL;
 
         // 合計が21を超えたら終了
-        if (HumPlayerRule::isBust($playerTotalScore)) {
+        if ($player->isBust($playerTotalScore)) {
             echo 'あなたの現在の得点は' .
                 $playerTotalScore .
                 'です。バーストしました。' . PHP_EOL . PHP_EOL .
@@ -91,13 +98,19 @@ class Message
     }
 
     /**
+     * ここを修正
+     * $cpuLastDrawnCardをBlackjackGameクラスから移行
+     */
+    /**
      * CPUがカードを引くメッセージを表示
      *
-     * @param int  $num
-     * @param Card $cpuLastDrawnCard
+     * @param \Participants\CpuPlayer $cpuPlayer
+     * @param int       $num
      */
-    public function showCpuDrawnMsg(int $num, Card $cpuLastDrawnCard): void
+    public function showCpuDrawnMsg(CpuPlayer $cpuPlayer, int $num): void
     {
+        $cpuLastDrawnCard = $cpuPlayer->getCards()[array_key_last($cpuPlayer->getCards())];
+
         echo PHP_EOL .
             'CPUプレイヤー' . $num . 'がカードを引きます。' . PHP_EOL .
             'CPUプレイヤー' . $num . 'の引いたカードは' .
@@ -121,12 +134,18 @@ class Message
     }
 
     /**
+     * ここを修正
+     * $dealerLastDrawnCardをBlackjackGameクラスから移行
+     */
+    /**
      * ディーラーがカードを引くメッセージを表示
      *
-     * @param Card $dealerLastDrawnCard
+     * @param Dealer $dealer
      */
-    public function showDealerDrawnMsg(Card $dealerLastDrawnCard): void
+    public function showDealerDrawnMsg(Dealer $dealer): void
     {
+        $dealerLastDrawnCard = $dealer->getCards()[array_key_last($dealer->getCards())];
+
         echo PHP_EOL .
             'ディーラーがカードを引きます。' . PHP_EOL .
             'ディーラーの引いたカードは' .
