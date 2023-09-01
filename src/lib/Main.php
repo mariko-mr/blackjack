@@ -2,16 +2,22 @@
 
 namespace Blackjack;
 
-require_once __DIR__ . ('/Deck.php');
-require_once __DIR__ . ('/HumPlayer.php');
-require_once __DIR__ . ('/HumPlayerRule.php');
-require_once __DIR__ . ('/Dealer.php');
-require_once __DIR__ . ('/DealerRule.php');
-require_once __DIR__ . ('/AceRule.php');
-require_once __DIR__ . ('/Message.php');
-require_once __DIR__ . ('/Validator.php');
-require_once __DIR__ . ('/HandJudger.php');
-require_once __DIR__ . ('/BlackjackGame.php');
+require_once(__DIR__ . '/Deck.php');
+require_once(__DIR__ . '/Message.php');
+require_once(__DIR__ . '/Validator.php');
+require_once(__DIR__ . '/HandJudger.php');
+require_once(__DIR__ . '/BlackjackGame.php');
+require_once(__DIR__ . '/Participants/HumPlayer.php');
+require_once(__DIR__ . '/Participants/Dealer.php');
+require_once(__DIR__ . '/Rule/HumPlayerRule.php');
+require_once(__DIR__ . '/Rule/DealerRule.php');
+require_once(__DIR__ . '/Rule/AceRule.php');
+
+use Blackjack\Participants\HumPlayer;
+use Blackjack\Participants\Dealer;
+use Blackjack\Rule\HumPlayerRule;
+use Blackjack\Rule\DealerRule;
+use Blackjack\Rule\AceRule;
 
 /**
  * ここを修正
