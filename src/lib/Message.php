@@ -182,8 +182,9 @@ class Message
             if ($key !== 'ディーラー') {
                 if ($result === '引き分け') {
                     echo $key . 'は引き分けです。' . PHP_EOL;
+                } else {
+                    echo $key . 'の' . $result . 'です。' . PHP_EOL;
                 }
-                echo $key . 'の' . $result . 'です。' . PHP_EOL;
             }
         }
 

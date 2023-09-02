@@ -38,8 +38,9 @@ class HandJudger
                 $results[$participant['name']] = '引き分け';
             } elseif ($this->isHigherScore($participants, $participant)) {
                 $results[$participant['name']] = '勝ち';
+            } else {
+                $results[$participant['name']] = '負け';
             }
-            $results[$participant['name']] = '負け';
         }
         return $results;
     }
