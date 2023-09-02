@@ -20,9 +20,9 @@ class Message
     /**
      * 開始時のメッセージを表示
      *
-     * @param \Participants\HumPlayer $player
+     * @param HumPlayer $player
      * @param array     $cpuPlayers
-     * @param Participants\Dealer    $dealer
+     * @param Dealer    $dealer
      */
     public function showStartMsg(HumPlayer $player, array $cpuPlayers, Dealer $dealer): void
     {
@@ -51,8 +51,8 @@ class Message
 
         // ディーラーのカードを表示
         echo 'ディーラーの引いたカードは' .
-            ($dealer->getCards())[0]->getSuit() . 'の' .
-            ($dealer->getCards())[0]->getNumber() . 'です。' . PHP_EOL .
+            (($dealer->getCards())[0])->getSuit() . 'の' .
+            (($dealer->getCards())[0])->getNumber() . 'です。' . PHP_EOL .
             'ディーラーの引いた2枚目のカードはわかりません。' . PHP_EOL . PHP_EOL;
 
         // プレイヤーの合計点
@@ -61,12 +61,6 @@ class Message
             'です。カードを引きますか？（y/N）' . PHP_EOL;
     }
 
-    /**
-     * ここを修正
-     *
-     * バーストする条件をHumPlayerRuleに委譲
-     * $playerLastDrawnCard, $playerTotalScoreをBlackjackGameクラスから移行
-     */
     /**
      * プレイヤーターンのメッセージを表示
      *
@@ -98,13 +92,9 @@ class Message
     }
 
     /**
-     * ここを修正
-     * $cpuLastDrawnCardをBlackjackGameクラスから移行
-     */
-    /**
      * CPUがカードを引くメッセージを表示
      *
-     * @param \Participants\CpuPlayer $cpuPlayer
+     * @param CpuPlayer $cpuPlayer
      * @param int       $num
      */
     public function showCpuDrawnMsg(CpuPlayer $cpuPlayer, int $num): void
@@ -127,16 +117,12 @@ class Message
     {
         echo PHP_EOL .
             'ディーラーの引いた2枚目のカードは' .
-            ($dealer->getCards())[1]->getSuit() . 'の' .
-            ($dealer->getCards())[1]->getNumber() . 'でした。' . PHP_EOL .
+            (($dealer->getCards())[1])->getSuit() . 'の' .
+            (($dealer->getCards())[1])->getNumber() . 'でした。' . PHP_EOL .
             'ディーラーの現在の得点は' .
             $dealer->getTotalScore() . 'です。' . PHP_EOL;
     }
 
-    /**
-     * ここを修正
-     * $dealerLastDrawnCardをBlackjackGameクラスから移行
-     */
     /**
      * ディーラーがカードを引くメッセージを表示
      *
@@ -196,9 +182,8 @@ class Message
             if ($key !== 'ディーラー') {
                 if ($result === '引き分け') {
                     echo $key . 'は引き分けです。' . PHP_EOL;
-                } else {
-                    echo $key . 'の' . $result . 'です。' . PHP_EOL;
                 }
+                echo $key . 'の' . $result . 'です。' . PHP_EOL;
             }
         }
 

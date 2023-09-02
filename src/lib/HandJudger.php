@@ -34,13 +34,12 @@ class HandJudger
 
         // ディーラーがバーストしてない場合
         foreach ($participants as $key => $participant) {
-            if ($this->isTie($participants, $participant)) {   // ディーラーと同点なら引き分け
+            if ($this->isTie($participants, $participant)) {
                 $results[$participant['name']] = '引き分け';
-            } elseif ($this->isHigherScore($participants, $participant)) { // ディーラーより高得点なら勝ち
+            } elseif ($this->isHigherScore($participants, $participant)) {
                 $results[$participant['name']] = '勝ち';
-            } else {
-                $results[$participant['name']] = '負け';
             }
+            $results[$participant['name']] = '負け';
         }
         return $results;
     }
