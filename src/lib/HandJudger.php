@@ -8,7 +8,7 @@ class HandJudger
      * 勝者を決定する
      *
      * @param  array $participants
-     * @return array $results [['participant' => 'result'], ...]
+     * @return array $results ['participant' => 'result', ...]
      */
     public function determineWinner($participants): array
     {
