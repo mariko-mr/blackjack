@@ -27,9 +27,9 @@ class Validator
      * @param  string $number
      * @return int    $number validated 1~3
      */
-    public function validateNumberAnswer(int $number, Message $message): int
+    public function validateNumberAnswer(string $number, Message $message): int
     {
-        $allowedNumbers  = [1, 2, 3];
+        $allowedNumbers  = ['1', '2', '3'];
 
         while (!(in_array($number, $allowedNumbers))) {
             $message->showValidateNumberErrorMsg();
