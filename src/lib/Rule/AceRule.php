@@ -7,7 +7,10 @@ class AceRule
     /**
      * Aの得点を11から1へと減算する
      *
-     * @return int
+     * @param  ParticipantRule $participantRule
+     * @param  int   $totalScore
+     * @param  array $cards
+     * @return int   $aceCount Aによって減算された最終得点
      */
     public function subtractAceScore($participantRule, int $totalScore, array $cards): int
     {
