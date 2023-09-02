@@ -66,7 +66,7 @@ class Dealer
     }
 
     /**
-     * ここを追加
+     * バーストしているか調べる
      *
      * @param  int $dealerTotalScore
      * @return bool
@@ -77,10 +77,19 @@ class Dealer
     }
 
     /**
-     * ここを修正
-     *
-     * Aルールによる減算をAceRuleクラスに委譲
+     * ここを追加
      */
+    /**
+     * 続けてカードを引くか決める
+     *
+     * @param  int $dealerTotalScore
+     * @return bool
+     */
+    public function shouldDrawCard(int $dealerTotalScore): bool
+    {
+        return $this->dealerRule->shouldDrawCard($dealerTotalScore);
+    }
+
     /**
      * ディーラーの合計点を更新
      *

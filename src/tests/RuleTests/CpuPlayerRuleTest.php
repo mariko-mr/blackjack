@@ -14,17 +14,18 @@ require_once(__DIR__ . '/../../lib/Rule/CpuPlayerRule.php');
 
 final class CpuPlayerRuleTest extends TestCase
 {
-    public function testShouldDrawCard(): void
-    {
-        $cpuPlayer = new CpuPlayer(new CpuPlayerRule, new AceRule);
-        $this->assertTrue(CpuPlayerRule::shouldDrawCard($cpuPlayer));
-    }
-
     public function testIsBust(): void
     {
         $cpuPlayerRule = new CpuPlayerRule();
 
         $this->assertFalse($cpuPlayerRule->isBust(21));
         $this->assertTrue($cpuPlayerRule->isBust(22));
+    }
+
+    public function testShouldDrawCard(): void
+    {
+        $cpuPlayerRule = new CpuPlayerRule();
+        $this->assertFalse($cpuPlayerRule->shouldDrawCard(17));
+        $this->assertTrue($cpuPlayerRule->shouldDrawCard(16));
     }
 }

@@ -66,7 +66,7 @@ class CpuPlayer
     }
 
     /**
-     * ここを追加
+     * バーストしているか調べる
      *
      * @param  int $cpuTotalScore
      * @return bool
@@ -77,10 +77,19 @@ class CpuPlayer
     }
 
     /**
-     * ここを修正
-     *
-     * Aルールによる減算をAceRuleクラスに委譲
+     * ここを追加
      */
+    /**
+     * 続けてカードを引くか決める
+     *
+     * @param  int $cpuTotalScore
+     * @return bool
+     */
+    public function shouldDrawCard(int $cpuTotalScore): bool
+    {
+        return $this->cpuPlayerRule->shouldDrawCard($cpuTotalScore);
+    }
+
     /**
      * CPUプレイヤーの合計点を更新
      *

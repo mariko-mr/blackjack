@@ -36,18 +36,6 @@ class HumPlayer
      */
     public function drawCards(Deck $deck, int $drawNum): void
     {
-        // $drawnCards = $deck->drawCards($drawNum);
-
-        // // 引いたカードを持ち札に加える
-        // $this->playerCards = array_merge($this->playerCards, $drawnCards);
-
-        // // 合計点を更新する
-        // $this->playerTotalScore = $this->updateTotalScore($drawnCards);
-
-        // return $this->playerCards;
-
-
-
         $drawnCards = $deck->drawCards($drawNum);
 
         // 引いたカードを持ち札に加える
@@ -78,7 +66,7 @@ class HumPlayer
     }
 
     /**
-     * ここを追加
+     * バーストしているか調べる
      *
      * @param  int $playerTotalScore
      * @return bool
@@ -88,11 +76,6 @@ class HumPlayer
         return $this->playerRule->isBust($playerTotalScore);
     }
 
-    /**
-     * ここを修正
-     *
-     * Aルールによる減算をAceRuleクラスに委譲
-     */
     /**
      * プレイヤーの合計点を更新
      *
