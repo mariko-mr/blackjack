@@ -5,17 +5,16 @@ namespace Blackjack;
 class Validator
 {
     /**
-     * 入力値('y' or 'N')のバリデーション処理
+     * 入力値(y or N)のバリデーション処理
      *
      * @param  string $answer
      * @return string $answer validated 'y' or 'N'
      */
-    public function validateYesNoAnswer(string $answer): string
+    public function validateYesNoAnswer(string $answer, Message $message): string
     {
         // 入力値のバリデーション処理
         while (!($answer === 'y' || $answer === 'N')) {
-            echo PHP_EOL .
-                'yまたはNを入力してください。' . PHP_EOL;
+            $message->showValidateYesNoErrorMsg();
             $answer = trim(fgets(STDIN));
         }
         return $answer;
@@ -28,13 +27,12 @@ class Validator
      * @param  string $number
      * @return int    $number validated 1~3
      */
-    public function validateNumberAnswer($number): int
+    public function validateNumberAnswer(string $number, Message $message): int
     {
-        $allowedNumbers  = [1, 2, 3];
+        $allowedNumbers  = ['1', '2', '3'];
 
         while (!(in_array($number, $allowedNumbers))) {
-            echo PHP_EOL .
-                '1~3の数値を入力してください。' . PHP_EOL;
+            $message->showValidateNumberErrorMsg();
             $number = trim(fgets(STDIN));
         }
         return $number;

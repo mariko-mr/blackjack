@@ -2,7 +2,7 @@
 
 namespace Blackjack;
 
-require_once __DIR__ . ('/Card.php');
+require_once(__DIR__ . '/Card.php');
 
 class Deck
 {

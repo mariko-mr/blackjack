@@ -8,15 +8,15 @@ class HandJudger
      * 勝者を決定する
      *
      * @param  array $participants
-     * @return array $results [['participant' => 'result'], ...]
+     * @return array $results ['participant' => 'result', ...]
      */
     public function determineWinner($participants): array
     {
         $results = [];
 
-        // totalが21を超えた参加者はバースト
+        // totalが21を超えた参加者はバースト TODO: ルールをルールクラスに委譲
         foreach ($participants as $key => $participant) {
-            if ($participant['total'] > 21) {
+            if ($participant['obj']->isBust($participant['total'])) {
                 $results[$participant['name']] = 'バースト';
 
                 // バーストした人を$participantsから除く
