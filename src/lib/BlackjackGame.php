@@ -9,7 +9,6 @@ require_once(__DIR__ . '/Rule/AceRule.php');
 use Blackjack\Participants\HumPlayer;
 use Blackjack\Participants\Dealer;
 use Blackjack\Participants\CpuPlayer;
-use Blackjack\Rule\DealerRule;
 use Blackjack\Rule\CpuPlayerRule;
 use Blackjack\Rule\AceRule;
 
@@ -82,11 +81,6 @@ class BlackjackGame
     }
 
     /**
-     * ここを修正
-     *
-     * CPUプレイヤーインスタンスに引き数を追加
-     */
-    /**
      * 開始時のゲーム設定
      *
      */
@@ -112,11 +106,6 @@ class BlackjackGame
     }
 
     /**
-     * ここを修正
-     *
-     * $playerLastDrawnCard, $playerTotalScoreをMessageクラスへ移行
-     */
-    /**
      * プレイヤーのターン
      *
      * @return string プレイヤーの回答 y or N
@@ -131,12 +120,6 @@ class BlackjackGame
     }
 
     /**
-     * ここを修正
-     *
-     * カードを引き続ける条件をCpuPlayerRuleに委譲
-     * $cpuLastDrawnCardをMessageクラスへ移行
-     */
-    /**
      * CPUのターン
      *
      * @param CpuPlayer $cpuPlayer
@@ -145,18 +128,12 @@ class BlackjackGame
     private function cpuTurn(CpuPlayer $cpuPlayer, int $num): void
     {
         // 合計が17以上になるまでカードを引き続ける
-        while (CpuPlayerRule::shouldDrawCard($cpuPlayer)) {
+        while ($cpuPlayer->shouldDrawCard($cpuPlayer->getTotalScore())) {
             $cpuPlayer->drawCards($this->deck, self::DRAW_ONE);
             $this->message->showCpuDrawnMsg($cpuPlayer, $num);
         }
     }
 
-    /**
-     * ここを修正
-     *
-     * カードを引き続ける条件をDealerRuleに委譲
-     * $dealerLastDrawnCardをMessageクラスへ移行
-     */
     /**
      * ディーラーのターン
      *
@@ -167,7 +144,7 @@ class BlackjackGame
         $this->message->showDealerTurnMsg($this->dealer);
 
         // 合計が17以上になるまでカードを引き続ける
-        while (DealerRule::shouldDrawCard($this->dealer)) {
+        while ($this->dealer->shouldDrawCard($this->dealer->getTotalScore())) {
             $this->dealer->drawCards($this->deck, self::DRAW_ONE);
             $this->message->showDealerDrawnMsg($this->dealer);
         }
