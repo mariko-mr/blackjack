@@ -16,7 +16,7 @@ class CpuPlayer
     private array $cpuCards;
 
     /** @var int    CPUプレイヤーの総得点 */
-    private int   $cpuTotalScore;
+    private int $cpuTotalScore;
 
     public function __construct(
         private CpuPlayerRule $cpuPlayerRule,

@@ -16,7 +16,7 @@ class HumPlayer
     private array $playerCards;
 
     /** @var int    プレイヤーの総得点 */
-    private int   $playerTotalScore;
+    private int $playerTotalScore;
 
     public function __construct(
         private HumPlayerRule $playerRule,

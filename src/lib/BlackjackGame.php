@@ -91,7 +91,7 @@ class BlackjackGame
         // CPUプレイヤーがいる場合、インスタンスを生成し2枚ずつカードを引く
         if ($validatedNumber >= 2) {
             for ($i = 1; $i < $validatedNumber; $i++) {
-                $this->cpuPlayers[$i] = new CpuPlayer(new CpuPlayerRule, new AceRule);
+                $this->cpuPlayers[$i] = new CpuPlayer(new CpuPlayerRule(), new AceRule());
             }
             foreach ($this->cpuPlayers as $cpuPlayer) {
                 $cpuPlayer->drawCards($this->deck, self::DRAW_TWO);
@@ -194,7 +194,9 @@ class BlackjackGame
 
         // CPUが一人の場合$numは1、CPUが二人の場合$numは1と2
         foreach ($this->cpuPlayers as $num => $cpuPlayer) {
-            $participants[$num] = ['name' => 'CPUプレイヤー' . $num, 'obj' => $cpuPlayer, 'total' => $cpuPlayer->getTotalScore()];
+            $participants[$num] = [
+                'name' => 'CPUプレイヤー' . $num, 'obj' => $cpuPlayer, 'total' => $cpuPlayer->getTotalScore()
+            ];
         }
 
         return $participants;

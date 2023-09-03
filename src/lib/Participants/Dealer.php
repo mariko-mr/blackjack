@@ -16,7 +16,7 @@ class Dealer
     private array $dealerCards;
 
     /** @var int    ディーラーの総得点 */
-    private int   $dealerTotalScore;
+    private int $dealerTotalScore;
 
     public function __construct(
         private DealerRule $dealerRule,

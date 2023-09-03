@@ -26,8 +26,8 @@ use Blackjack\Rule\AceRule;
  * ディーラーインスタンスに引き数を追加
  */
 $deck = new Deck();
-$player = new HumPlayer(new HumPlayerRule, new AceRule);
-$dealer = new Dealer(new DealerRule, new AceRule);
+$player = new HumPlayer(new HumPlayerRule(), new AceRule());
+$dealer = new Dealer(new DealerRule(), new AceRule());
 $message = new Message();
 $validator = new Validator();
 $handJudger = new HandJudger();
