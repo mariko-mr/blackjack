@@ -14,22 +14,15 @@ use Blackjack\Rule\AceRule;
 
 class BlackjackGame
 {
-    /**
-     * ゲーム開始時にデッキから引くカードの枚数
-     */
+    /** @var int ゲーム開始時にデッキから引くカードの枚数 */
     private const DRAW_TWO = 2;
 
-    /**
-     * 各自のターンにデッキから引くカードの枚数
-     */
+    /** @var int 各自のターンにデッキから引くカードの枚数 */
     private const DRAW_ONE = 1;
 
-    /**
-     * CpuPlayerの設定人数による配列
-     *
-     * @var CpuPlayer[]
-     */
+    /** @var CpuPlayer[] CpuPlayerの設定人数による配列 */
     private array $cpuPlayers;
+
 
     public function __construct(
         private Deck $deck,
@@ -43,9 +36,12 @@ class BlackjackGame
         $this->cpuPlayers = [];
     }
 
+
+
     /**
      * ブラックジャックゲームの一連の流れを管理
      *
+     * @return void
      */
     public function playGame(): void
     {
@@ -58,6 +54,7 @@ class BlackjackGame
     /**
      * ゲームをスタート
      *
+     * @return void
      */
     private function startGame(): void
     {
@@ -83,6 +80,7 @@ class BlackjackGame
     /**
      * 開始時のゲーム設定
      *
+     * @return void
      */
     private function setupGame(): void
     {
@@ -108,7 +106,7 @@ class BlackjackGame
     /**
      * プレイヤーのターン
      *
-     * @return string プレイヤーの回答 y or N
+     * @return string プレイヤーの回答(y or N)
      */
     private function playerTurn(): string
     {
@@ -122,8 +120,9 @@ class BlackjackGame
     /**
      * CPUのターン
      *
-     * @param CpuPlayer $cpuPlayer
-     * @param int $num
+     * @param  CpuPlayer $cpuPlayer
+     * @param  int $num
+     * @return void
      */
     private function cpuTurn(CpuPlayer $cpuPlayer, int $num): void
     {
@@ -137,6 +136,7 @@ class BlackjackGame
     /**
      * ディーラーのターン
      *
+     * @return void
      */
     private function dealerTurn(): void
     {
@@ -154,6 +154,7 @@ class BlackjackGame
      * ゲーム結果を判定
      *
      * @param  HandJudger $handJudger
+     * @return void
      */
     private function showDown(HandJudger $handJudger): void
     {
@@ -171,6 +172,7 @@ class BlackjackGame
     /**
      * ゲームを終了
      *
+     * @return void
      */
     private function quitGame(): void
     {
@@ -181,7 +183,7 @@ class BlackjackGame
     /**
      * 参加者を扱いやすいように配列にまとめる
      *
-     * @return array $participants
+     * @return array<string, array<string, mixed>>
      */
     private function createParticipantsArray(): array
     {

@@ -8,14 +8,14 @@ require_once(__DIR__ . '/../Rule/AceRule.php');
 use Blackjack\Rule\DealerRule;
 use Blackjack\Rule\AceRule;
 use Blackjack\Deck;
+use Blackjack\Card;
 
 class Dealer
 {
-    /**
-     * @var Card[] ディーラーの持ち札
-     * @var int    ディーラーの総得点
-     */
+    /** @var Card[] ディーラーの持ち札 */
     private array $dealerCards;
+
+    /** @var int    ディーラーの総得点 */
     private int   $dealerTotalScore;
 
     public function __construct(
@@ -48,7 +48,7 @@ class Dealer
     /**
      * ディーラーのカードを取得
      *
-     * @return array
+     * @return Card[]
      */
     public function getCards(): array
     {
@@ -77,9 +77,6 @@ class Dealer
     }
 
     /**
-     * ここを追加
-     */
-    /**
      * 続けてカードを引くか決める
      *
      * @param  int $dealerTotalScore
@@ -93,7 +90,7 @@ class Dealer
     /**
      * ディーラーの合計点を更新
      *
-     * @param  Card[] $drawnCards
+     * @param  Card[] $dealerCards
      * @return int
      */
     private function updateTotalScore(array $dealerCards): int

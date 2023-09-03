@@ -8,14 +8,14 @@ require_once(__DIR__ . '/../Rule/AceRule.php');
 use Blackjack\Rule\CpuPlayerRule;
 use Blackjack\Rule\AceRule;
 use Blackjack\Deck;
+use Blackjack\Card;
 
 class CpuPlayer
 {
-    /**
-     * @var Card[] CPUプレイヤーの持ち札
-     * @var int    CPUプレイヤーの総得点
-     */
+    /** @var Card[] CPUプレイヤーの持ち札 */
     private array $cpuCards;
+
+    /** @var int    CPUプレイヤーの総得点 */
     private int   $cpuTotalScore;
 
     public function __construct(
@@ -48,7 +48,7 @@ class CpuPlayer
     /**
      * CPUプレイヤーのカードを取得
      *
-     * @return array
+     * @return Card[]
      */
     public function getCards(): array
     {
@@ -77,9 +77,6 @@ class CpuPlayer
     }
 
     /**
-     * ここを追加
-     */
-    /**
      * 続けてカードを引くか決める
      *
      * @param  int $cpuTotalScore
@@ -93,7 +90,7 @@ class CpuPlayer
     /**
      * CPUプレイヤーの合計点を更新
      *
-     * @param  Card[] $drawnCards
+     * @param  Card[] $cpuCards
      * @return int
      */
     private function updateTotalScore(array $cpuCards): int

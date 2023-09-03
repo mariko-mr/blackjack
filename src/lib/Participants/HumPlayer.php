@@ -8,14 +8,14 @@ require_once(__DIR__ . '/../Rule/AceRule.php');
 use Blackjack\Rule\HumPlayerRule;
 use Blackjack\Rule\AceRule;
 use Blackjack\Deck;
+use Blackjack\Card;
 
 class HumPlayer
 {
-    /**
-     * @var Card[] プレイヤーの持ち札
-     * @var int    プレイヤーの総得点
-     */
+    /** @var Card[] プレイヤーの持ち札 */
     private array $playerCards;
+
+    /** @var int    プレイヤーの総得点 */
     private int   $playerTotalScore;
 
     public function __construct(
@@ -32,7 +32,7 @@ class HumPlayer
      *
      * @param  Deck $deck
      * @param  int  $drawNum
-     * @return Card[]
+     * @return void
      */
     public function drawCards(Deck $deck, int $drawNum): void
     {
@@ -48,7 +48,7 @@ class HumPlayer
     /**
      * プレイヤーのカードを取得
      *
-     * @return array
+     * @return Card[]
      */
     public function getCards(): array
     {
@@ -79,7 +79,7 @@ class HumPlayer
     /**
      * プレイヤーの合計点を更新
      *
-     * @param  Card[] $drawnCards
+     * @param  Card[] $playerCards
      * @return int
      */
     private function updateTotalScore(array $playerCards): int

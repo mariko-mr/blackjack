@@ -7,14 +7,14 @@ class HandJudger
     /**
      * 勝者を決定する
      *
-     * @param  array $participants
-     * @return array $results ['participant' => 'result', ...]
+     * @param  array<string, array<string, mixed>> $participants
+     * @return array<string, string> $results ['participant' => 'result', ...]
      */
     public function determineWinner($participants): array
     {
         $results = [];
 
-        // totalが21を超えた参加者はバースト TODO: ルールをルールクラスに委譲
+        // totalが21を超えた参加者はバースト
         foreach ($participants as $key => $participant) {
             if ($participant['obj']->isBust($participant['total'])) {
                 $results[$participant['name']] = 'バースト';
@@ -48,8 +48,8 @@ class HandJudger
     /**
      * ディーラーと同点か調べる
      *
-     * @param  array $participants
-     * @param  array $participant
+     * @param  array<string, array<string, mixed>> $participants
+     * @param  array<string, string> $participant
      * @return bool
      */
     private function isTie(array $participants, array $participant): bool
@@ -60,8 +60,8 @@ class HandJudger
     /**
      * ディーラーより高得点か調べる
      *
-     * @param  array $participants
-     * @param  array $participant
+     * @param  array<string, array<string, mixed>> $participants
+     * @param  array<string, string> $participant
      * @return bool
      */
     private function isHigherScore(array $participants, array $participant): bool

@@ -11,6 +11,7 @@ class Message
     /**
      * 設定メッセージを表示
      *
+     * @return void
      */
     public function showSetupMsg(): void
     {
@@ -21,8 +22,9 @@ class Message
      * 開始時のメッセージを表示
      *
      * @param HumPlayer $player
-     * @param array     $cpuPlayers
+     * @param array<int, CpuPlayer> $cpuPlayers
      * @param Dealer    $dealer
+     * @return void
      */
     public function showStartMsg(HumPlayer $player, array $cpuPlayers, Dealer $dealer): void
     {
@@ -65,6 +67,7 @@ class Message
      * プレイヤーターンのメッセージを表示
      *
      * @param HumPlayer $player
+     * @return void
      */
     public function showPlayerTurnMsg(HumPlayer $player): void
     {
@@ -96,6 +99,7 @@ class Message
      *
      * @param CpuPlayer $cpuPlayer
      * @param int       $num
+     * @return void
      */
     public function showCpuDrawnMsg(CpuPlayer $cpuPlayer, int $num): void
     {
@@ -112,6 +116,7 @@ class Message
      * ディーラーが引いた2枚目のカードを表示
      *
      * @param Dealer $dealer
+     * @return void
      */
     public function showDealerTurnMsg(Dealer $dealer): void
     {
@@ -127,6 +132,7 @@ class Message
      * ディーラーがカードを引くメッセージを表示
      *
      * @param Dealer $dealer
+     * @return void
      */
     public function showDealerDrawnMsg(Dealer $dealer): void
     {
@@ -142,7 +148,8 @@ class Message
     /**
      * 得点発表メッセージを表示
      *
-     * @param array $participants
+     * @param  array<string, array<string, mixed>> $participants
+     * @return void
      */
     public function showTotalScoreMsg(array $participants): void
     {
@@ -161,7 +168,8 @@ class Message
     /**
      * 勝敗判定メッセージを表示
      *
-     * @param array $results
+     * @param array<string, string> $results
+     * @return void
      */
     public function showJudgmentMsg(array $results): void
     {
@@ -194,6 +202,7 @@ class Message
     /**
      * 終了メッセージを表示
      *
+     * @return void
      */
     public function showExitMsg(): void
     {
@@ -203,6 +212,7 @@ class Message
     /**
      * yes or NO 入力時のメッセージを表示
      *
+     * @return void
      */
     public function showValidateYesNoErrorMsg(): void
     {
@@ -213,6 +223,7 @@ class Message
     /**
      * CPUプレイヤー人数入力時のメッセージを表示
      *
+     * @return void
      */
     public function showValidateNumberErrorMsg(): void
     {
