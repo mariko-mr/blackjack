@@ -2,21 +2,22 @@
 
 namespace Blackjack\Participants;
 
+require_once(__DIR__ . '/../Participants/Participant.php');
 require_once(__DIR__ . '/../Rule/DealerRule.php');
 require_once(__DIR__ . '/../Rule/AceRule.php');
 
 use Blackjack\Rule\DealerRule;
 use Blackjack\Rule\AceRule;
 use Blackjack\Deck;
+use Blackjack\Card;
 
-class Dealer
+class Dealer extends Participant
 {
-    /**
-     * @var Card[] ディーラーの持ち札
-     * @var int    ディーラーの総得点
-     */
+    /** @var Card[] ディーラーの持ち札 */
     private array $dealerCards;
-    private int   $dealerTotalScore;
+
+    /** @var int    ディーラーの総得点 */
+    private int $dealerTotalScore;
 
     public function __construct(
         private DealerRule $dealerRule,
@@ -48,7 +49,7 @@ class Dealer
     /**
      * ディーラーのカードを取得
      *
-     * @return array
+     * @return Card[]
      */
     public function getCards(): array
     {
@@ -77,9 +78,6 @@ class Dealer
     }
 
     /**
-     * ここを追加
-     */
-    /**
      * 続けてカードを引くか決める
      *
      * @param  int $dealerTotalScore
@@ -93,10 +91,10 @@ class Dealer
     /**
      * ディーラーの合計点を更新
      *
-     * @param  Card[] $drawnCards
+     * @param  Card[] $dealerCards
      * @return int
      */
-    private function updateTotalScore(array $dealerCards): int
+    protected function updateTotalScore(array $dealerCards): int
     {
         $this->dealerTotalScore = 0;
 

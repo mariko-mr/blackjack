@@ -11,6 +11,7 @@ class Message
     /**
      * 設定メッセージを表示
      *
+     * @return void
      */
     public function showSetupMsg(): void
     {
@@ -20,9 +21,10 @@ class Message
     /**
      * 開始時のメッセージを表示
      *
-     * @param \Participants\HumPlayer $player
-     * @param array     $cpuPlayers
-     * @param Participants\Dealer    $dealer
+     * @param HumPlayer $player
+     * @param array<int, CpuPlayer> $cpuPlayers
+     * @param Dealer    $dealer
+     * @return void
      */
     public function showStartMsg(HumPlayer $player, array $cpuPlayers, Dealer $dealer): void
     {
@@ -51,8 +53,8 @@ class Message
 
         // ディーラーのカードを表示
         echo 'ディーラーの引いたカードは' .
-            ($dealer->getCards())[0]->getSuit() . 'の' .
-            ($dealer->getCards())[0]->getNumber() . 'です。' . PHP_EOL .
+            (($dealer->getCards())[0])->getSuit() . 'の' .
+            (($dealer->getCards())[0])->getNumber() . 'です。' . PHP_EOL .
             'ディーラーの引いた2枚目のカードはわかりません。' . PHP_EOL . PHP_EOL;
 
         // プレイヤーの合計点
@@ -62,15 +64,10 @@ class Message
     }
 
     /**
-     * ここを修正
-     *
-     * バーストする条件をHumPlayerRuleに委譲
-     * $playerLastDrawnCard, $playerTotalScoreをBlackjackGameクラスから移行
-     */
-    /**
      * プレイヤーターンのメッセージを表示
      *
      * @param HumPlayer $player
+     * @return void
      */
     public function showPlayerTurnMsg(HumPlayer $player): void
     {
@@ -98,14 +95,11 @@ class Message
     }
 
     /**
-     * ここを修正
-     * $cpuLastDrawnCardをBlackjackGameクラスから移行
-     */
-    /**
      * CPUがカードを引くメッセージを表示
      *
-     * @param \Participants\CpuPlayer $cpuPlayer
+     * @param CpuPlayer $cpuPlayer
      * @param int       $num
+     * @return void
      */
     public function showCpuDrawnMsg(CpuPlayer $cpuPlayer, int $num): void
     {
@@ -122,25 +116,23 @@ class Message
      * ディーラーが引いた2枚目のカードを表示
      *
      * @param Dealer $dealer
+     * @return void
      */
     public function showDealerTurnMsg(Dealer $dealer): void
     {
         echo PHP_EOL .
             'ディーラーの引いた2枚目のカードは' .
-            ($dealer->getCards())[1]->getSuit() . 'の' .
-            ($dealer->getCards())[1]->getNumber() . 'でした。' . PHP_EOL .
+            (($dealer->getCards())[1])->getSuit() . 'の' .
+            (($dealer->getCards())[1])->getNumber() . 'でした。' . PHP_EOL .
             'ディーラーの現在の得点は' .
             $dealer->getTotalScore() . 'です。' . PHP_EOL;
     }
 
     /**
-     * ここを修正
-     * $dealerLastDrawnCardをBlackjackGameクラスから移行
-     */
-    /**
      * ディーラーがカードを引くメッセージを表示
      *
      * @param Dealer $dealer
+     * @return void
      */
     public function showDealerDrawnMsg(Dealer $dealer): void
     {
@@ -156,7 +148,8 @@ class Message
     /**
      * 得点発表メッセージを表示
      *
-     * @param array $participants
+     * @param  array<string, array<string, mixed>> $participants
+     * @return void
      */
     public function showTotalScoreMsg(array $participants): void
     {
@@ -175,7 +168,8 @@ class Message
     /**
      * 勝敗判定メッセージを表示
      *
-     * @param array $results
+     * @param array<string, string> $results
+     * @return void
      */
     public function showJudgmentMsg(array $results): void
     {
@@ -208,6 +202,7 @@ class Message
     /**
      * 終了メッセージを表示
      *
+     * @return void
      */
     public function showExitMsg(): void
     {
@@ -217,6 +212,7 @@ class Message
     /**
      * yes or NO 入力時のメッセージを表示
      *
+     * @return void
      */
     public function showValidateYesNoErrorMsg(): void
     {
@@ -227,6 +223,7 @@ class Message
     /**
      * CPUプレイヤー人数入力時のメッセージを表示
      *
+     * @return void
      */
     public function showValidateNumberErrorMsg(): void
     {
