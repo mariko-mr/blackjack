@@ -2,16 +2,16 @@
 
 namespace Blackjack\Participants;
 
+require_once(__DIR__ . '/../Rule/HumPlayerRule.php');
+require_once(__DIR__ . '/../Rule/AceRule.php');
+
+use Blackjack\Rule\HumPlayerRule;
+use Blackjack\Rule\AceRule;
 use Blackjack\Deck;
 use Blackjack\Card;
 
 abstract class Participant
 {
-    /**
-     * ルールインスタンスの作成
-     */
-    abstract public function __construct();
-
     /**
      * デッキからカードを引いて持ち札に加え、合計点を更新する
      *
