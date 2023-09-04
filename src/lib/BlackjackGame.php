@@ -2,16 +2,27 @@
 
 namespace Blackjack;
 
-require_once __DIR__ . ('/CpuPlayer.php');
+require_once(__DIR__ . '/Participants/CpuPlayer.php');
+require_once(__DIR__ . '/Rule/CpuPlayerRule.php');
+require_once(__DIR__ . '/Rule/AceRule.php');
+
+use Blackjack\Participants\HumPlayer;
+use Blackjack\Participants\Dealer;
+use Blackjack\Participants\CpuPlayer;
+use Blackjack\Rule\CpuPlayerRule;
+use Blackjack\Rule\AceRule;
 
 class BlackjackGame
 {
-    /**
-     * @var array $cpuPlayer
-     */
+    /** @var int ゲーム開始時にデッキから引くカードの枚数 */
     private const DRAW_TWO = 2;
+
+    /** @var int 各自のターンにデッキから引くカードの枚数 */
     private const DRAW_ONE = 1;
+
+    /** @var CpuPlayer[] CpuPlayerの設定人数による配列 */
     private array $cpuPlayers;
+
 
     public function __construct(
         private Deck $deck,
@@ -25,51 +36,62 @@ class BlackjackGame
         $this->cpuPlayers = [];
     }
 
-    /**
-     * ブラックジャックゲームを開始
-     *
-     */
-    public function startGame(): void
-    {
-        // ゲームの設定をする
-        $this->setupGame();
 
+
+    /**
+     * ブラックジャックゲームの一連の流れを管理
+     *
+     * @return void
+     */
+    public function playGame(): void
+    {
+        $this->setupGame();
+        $this->startGame();
+        $this->showDown($this->handJudger);
+        $this->quitGame();
+    }
+
+    /**
+     * ゲームをスタート
+     *
+     * @return void
+     */
+    private function startGame(): void
+    {
         // スタート時のメッセージを表示
         $this->message->showStartMsg($this->player, $this->cpuPlayers, $this->dealer);
-        $validatedAnswer = $this->validator->validateYesNoAnswer(trim(fgets(STDIN)));
+        $validatedAnswer = $this->validator->validateYesNoAnswer(trim(fgets(STDIN)), $this->message);
 
         // プレイヤーがカードを引くターン
         while ($validatedAnswer === 'y') {
             $validatedAnswer = $this->playerTurn();
         }
 
-        // CPUプレイヤーとディーラーがカードを引くターン
         if ($validatedAnswer === 'N') {
+            // CPUプレイヤーがカードを引くターン
             foreach ($this->cpuPlayers as $num => $cpuPlayer) {
                 $this->cpuTurn($cpuPlayer, $num);
             }
-
+            // ディーラーがカードを引くターン
             $this->dealerTurn();
         }
-
-        // 判定して終了する
-        $this->showDown($this->handJudger);
     }
 
     /**
      * 開始時のゲーム設定
      *
+     * @return void
      */
     private function setupGame(): void
     {
         // 設定メッセージを表示
         $this->message->showSetupMsg();
-        $validatedNumber = $this->validator->validateNumberAnswer(trim(fgets(STDIN)));
+        $validatedNumber = $this->validator->validateNumberAnswer(trim(fgets(STDIN)), $this->message);
 
         // CPUプレイヤーがいる場合、インスタンスを生成し2枚ずつカードを引く
         if ($validatedNumber >= 2) {
             for ($i = 1; $i < $validatedNumber; $i++) {
-                $this->cpuPlayers[$i] = new CpuPlayer();
+                $this->cpuPlayers[$i] = new CpuPlayer(new CpuPlayerRule(), new AceRule());
             }
             foreach ($this->cpuPlayers as $cpuPlayer) {
                 $cpuPlayer->drawCards($this->deck, self::DRAW_TWO);
@@ -84,43 +106,37 @@ class BlackjackGame
     /**
      * プレイヤーのターン
      *
+     * @return string プレイヤーの回答(y or N)
      */
     private function playerTurn(): string
     {
-        // プレイヤーがカードを1枚引く
         $this->player->drawCards($this->deck, self::DRAW_ONE);
-
-        $playerLastDrawnCard = $this->player->getCards()[array_key_last($this->player->getCards())];
-        $playerTotalScore = $this->player->getTotalScore();
-
-        $this->message->showPlayerTurnMsg($playerLastDrawnCard, $playerTotalScore);
+        $this->message->showPlayerTurnMsg($this->player);
 
         // メッセージへの入力をバリデーション処理して返す(y or N)
-        return $this->validator->validateYesNoAnswer(trim(fgets(STDIN)));
+        return $this->validator->validateYesNoAnswer(trim(fgets(STDIN)), $this->message);
     }
 
     /**
      * CPUのターン
      *
-     * @param CpuPlayer $cpuPlayer
-     * @param int       $num
+     * @param  CpuPlayer $cpuPlayer
+     * @param  int $num
+     * @return void
      */
     private function cpuTurn(CpuPlayer $cpuPlayer, int $num): void
     {
         // 合計が17以上になるまでカードを引き続ける
-        while ($cpuPlayer->getTotalScore() < 17) {
-
-            // CPUプレイヤーがカードを1枚引く
+        while ($cpuPlayer->shouldDrawCard($cpuPlayer->getTotalScore())) {
             $cpuPlayer->drawCards($this->deck, self::DRAW_ONE);
-
-            $cpuLastDrawnCard = $cpuPlayer->getCards()[array_key_last($cpuPlayer->getCards())];
-            $this->message->showCpuDrawnMsg($num, $cpuLastDrawnCard);
+            $this->message->showCpuDrawnMsg($cpuPlayer, $num);
         }
     }
 
     /**
      * ディーラーのターン
      *
+     * @return void
      */
     private function dealerTurn(): void
     {
@@ -128,18 +144,14 @@ class BlackjackGame
         $this->message->showDealerTurnMsg($this->dealer);
 
         // 合計が17以上になるまでカードを引き続ける
-        while ($this->dealer->getTotalScore() < 17) {
-
-            // ディーラーがカードを1枚引く
+        while ($this->dealer->shouldDrawCard($this->dealer->getTotalScore())) {
             $this->dealer->drawCards($this->deck, self::DRAW_ONE);
-
-            $dealerLastDrawnCard = $this->dealer->getCards()[array_key_last($this->dealer->getCards())];
-            $this->message->showDealerDrawnMsg($dealerLastDrawnCard);
+            $this->message->showDealerDrawnMsg($this->dealer);
         }
     }
 
     /**
-     * ゲーム結果を判定して終了する
+     * ゲーム結果を判定
      *
      * @param  HandJudger $handJudger
      * @return void
@@ -155,8 +167,15 @@ class BlackjackGame
         // 勝敗判定
         $results = $handJudger->determineWinner($participants);
         $this->message->showJudgmentMsg($results);
+    }
 
-        // ゲームを終了する
+    /**
+     * ゲームを終了
+     *
+     * @return void
+     */
+    private function quitGame(): void
+    {
         $this->message->showExitMsg();
         exit;
     }
@@ -164,18 +183,20 @@ class BlackjackGame
     /**
      * 参加者を扱いやすいように配列にまとめる
      *
-     * @return array $participants
+     * @return array<string, array<string, mixed>>
      */
     private function createParticipantsArray(): array
     {
         $participants = [
-            'dealer' => ['name' => 'ディーラー', 'total' => $this->dealer->getTotalScore()],
-            'you'    => ['name' => 'あなた',     'total' => $this->player->getTotalScore()],
+            'dealer' => ['name' => 'ディーラー', 'obj' => $this->dealer, 'total' => $this->dealer->getTotalScore()],
+            'player' => ['name' => 'あなた',     'obj' => $this->player, 'total' => $this->player->getTotalScore()],
         ];
 
         // CPUが一人の場合$numは1、CPUが二人の場合$numは1と2
         foreach ($this->cpuPlayers as $num => $cpuPlayer) {
-            $participants[$num] = ['name' => 'CPUプレイヤー' . $num, 'total' => $cpuPlayer->getTotalScore()];
+            $participants[$num] = [
+                'name' => 'CPUプレイヤー' . $num, 'obj' => $cpuPlayer, 'total' => $cpuPlayer->getTotalScore()
+            ];
         }
 
         return $participants;

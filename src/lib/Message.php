@@ -2,11 +2,16 @@
 
 namespace Blackjack;
 
+use Blackjack\Participants\HumPlayer;
+use Blackjack\Participants\Dealer;
+use Blackjack\Participants\CpuPlayer;
+
 class Message
 {
     /**
      * 設定メッセージを表示
      *
+     * @return void
      */
     public function showSetupMsg(): void
     {
@@ -17,8 +22,9 @@ class Message
      * 開始時のメッセージを表示
      *
      * @param HumPlayer $player
-     * @param array     $cpuPlayers
+     * @param array<int, CpuPlayer> $cpuPlayers
      * @param Dealer    $dealer
+     * @return void
      */
     public function showStartMsg(HumPlayer $player, array $cpuPlayers, Dealer $dealer): void
     {
@@ -47,8 +53,8 @@ class Message
 
         // ディーラーのカードを表示
         echo 'ディーラーの引いたカードは' .
-            ($dealer->getCards())[0]->getSuit() . 'の' .
-            ($dealer->getCards())[0]->getNumber() . 'です。' . PHP_EOL .
+            (($dealer->getCards())[0])->getSuit() . 'の' .
+            (($dealer->getCards())[0])->getNumber() . 'です。' . PHP_EOL .
             'ディーラーの引いた2枚目のカードはわかりません。' . PHP_EOL . PHP_EOL;
 
         // プレイヤーの合計点
@@ -60,37 +66,45 @@ class Message
     /**
      * プレイヤーターンのメッセージを表示
      *
-     * @param Card $playerLastDrawnCard
-     * @param int  $playerTotalScore
+     * @param HumPlayer $player
+     * @return void
      */
-    public function showPlayerTurnMsg(Card $playerLastDrawnCard, int $playerTotalScore): void
+    public function showPlayerTurnMsg(HumPlayer $player): void
     {
+        $playerLastDrawnCard = $player->getCards()[array_key_last($player->getCards())];
+        $playerTotalScore = $player->getTotalScore();
+
         echo PHP_EOL .
             'あなたの引いたカードは' .
             $playerLastDrawnCard->getSuit() . 'の' .
             $playerLastDrawnCard->getNumber() . 'です。' . PHP_EOL;
 
-        if ($playerTotalScore <= 21) { // 合計が21以内の場合は続行
-            echo 'あなたの現在の得点は' .
-                $playerTotalScore .
-                'です。カードを引きますか？（y/N）' . PHP_EOL;
-        } elseif ($playerTotalScore > 21) { // 合計が21を超えたら終了
+        // 合計が21を超えたら終了
+        if ($player->isBust($playerTotalScore)) {
             echo 'あなたの現在の得点は' .
                 $playerTotalScore .
                 'です。バーストしました。' . PHP_EOL . PHP_EOL .
                 '残念！あなたの負けです。' . PHP_EOL;
             exit;
         }
+
+        // 合計が21以内の場合は続行
+        echo 'あなたの現在の得点は' .
+            $playerTotalScore .
+            'です。カードを引きますか？（y/N）' . PHP_EOL;
     }
 
     /**
      * CPUがカードを引くメッセージを表示
      *
-     * @param int  $num
-     * @param Card $cpuLastDrawnCard
+     * @param CpuPlayer $cpuPlayer
+     * @param int       $num
+     * @return void
      */
-    public function showCpuDrawnMsg(int $num, Card $cpuLastDrawnCard): void
+    public function showCpuDrawnMsg(CpuPlayer $cpuPlayer, int $num): void
     {
+        $cpuLastDrawnCard = $cpuPlayer->getCards()[array_key_last($cpuPlayer->getCards())];
+
         echo PHP_EOL .
             'CPUプレイヤー' . $num . 'がカードを引きます。' . PHP_EOL .
             'CPUプレイヤー' . $num . 'の引いたカードは' .
@@ -102,13 +116,14 @@ class Message
      * ディーラーが引いた2枚目のカードを表示
      *
      * @param Dealer $dealer
+     * @return void
      */
     public function showDealerTurnMsg(Dealer $dealer): void
     {
         echo PHP_EOL .
             'ディーラーの引いた2枚目のカードは' .
-            ($dealer->getCards())[1]->getSuit() . 'の' .
-            ($dealer->getCards())[1]->getNumber() . 'でした。' . PHP_EOL .
+            (($dealer->getCards())[1])->getSuit() . 'の' .
+            (($dealer->getCards())[1])->getNumber() . 'でした。' . PHP_EOL .
             'ディーラーの現在の得点は' .
             $dealer->getTotalScore() . 'です。' . PHP_EOL;
     }
@@ -116,10 +131,13 @@ class Message
     /**
      * ディーラーがカードを引くメッセージを表示
      *
-     * @param Card $dealerLastDrawnCard
+     * @param Dealer $dealer
+     * @return void
      */
-    public function showDealerDrawnMsg(Card $dealerLastDrawnCard): void
+    public function showDealerDrawnMsg(Dealer $dealer): void
     {
+        $dealerLastDrawnCard = $dealer->getCards()[array_key_last($dealer->getCards())];
+
         echo PHP_EOL .
             'ディーラーがカードを引きます。' . PHP_EOL .
             'ディーラーの引いたカードは' .
@@ -130,7 +148,8 @@ class Message
     /**
      * 得点発表メッセージを表示
      *
-     * @param array $participants
+     * @param  array<string, array<string, mixed>> $participants
+     * @return void
      */
     public function showTotalScoreMsg(array $participants): void
     {
@@ -149,7 +168,8 @@ class Message
     /**
      * 勝敗判定メッセージを表示
      *
-     * @param array $results
+     * @param array<string, string> $results
+     * @return void
      */
     public function showJudgmentMsg(array $results): void
     {
@@ -182,9 +202,32 @@ class Message
     /**
      * 終了メッセージを表示
      *
+     * @return void
      */
     public function showExitMsg(): void
     {
         echo 'ブラックジャックを終了します。' . PHP_EOL;
+    }
+
+    /**
+     * yes or NO 入力時のメッセージを表示
+     *
+     * @return void
+     */
+    public function showValidateYesNoErrorMsg(): void
+    {
+        echo PHP_EOL .
+            'yまたはNを入力してください。' . PHP_EOL;
+    }
+
+    /**
+     * CPUプレイヤー人数入力時のメッセージを表示
+     *
+     * @return void
+     */
+    public function showValidateNumberErrorMsg(): void
+    {
+        echo PHP_EOL .
+            '1~3の数値を入力してください。' . PHP_EOL;
     }
 }

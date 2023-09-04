@@ -2,11 +2,14 @@
 
 namespace Blackjack;
 
-require_once __DIR__ . ('/Card.php');
+require_once(__DIR__ . '/Card.php');
 
 class Deck
 {
+    /** @var array<int, string> カードの役 */
     private const SUITS = ['ハート', 'ダイヤ', 'スペード', 'クラブ'];
+
+    /** @var array<array<string, string|int>> カードの数字と得点 */
     private const CARD_NUM_AND_SCORES = [
         ['num' => 'A',  'score' => 11],
         ['num' => '2',  'score' => 2],
@@ -23,9 +26,7 @@ class Deck
         ['num' => 'K',  'score' => 10],
     ];
 
-    /**
-     * @var Card[] $cards
-     */
+    /** @var Card[] $cards */
     private array $cards;
 
     public function __construct()
@@ -41,6 +42,8 @@ class Deck
     }
 
     /**
+     * デッキ(カード群)の上からカードを引く
+     *
      * @param  int $drawNum
      * @return Card[]
      */
