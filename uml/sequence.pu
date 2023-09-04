@@ -4,8 +4,8 @@ skinparam actorStyle awesome
 
 participant Main          as Main
 participant BlackjackGame as Game
-actor       PlayerAuto    as C
-actor       PlayerManual  as P #pink
+actor       CpuPlayer     as C
+actor       HumPlayer     as P #pink
 actor       Dealer        as D
 participant Deck          as Deck
 participant Card          as Card
@@ -15,117 +15,129 @@ group ゲームの開始
     Main -> Game : ゲームを開始する
     activate Game
 
-    Game -> Deck : デッキを作成する
-    activate Deck
-    Deck -> Card : カード52枚をシャッフル
-    activate Card
-    Card --> Deck : シャッフルしたカード
-    deactivate Card
-    deactivate Deck
+    group #FFEECC  ゲームの導入
+        Game -> HandJudger : HandJudgerを作成する
 
-    Game -> D : ディーラーを作成
-    activate D
-    D -> D : 初期化
-    deactivate D
+        Game -> Deck : デッキを作成する
+        activate Deck
+        Deck -> Card : カード52枚をシャッフル
+        activate Card
+        Card --> Deck : シャッフルしたカード
+        deactivate Card
+        deactivate Deck
 
-    Game -> P : プレイヤーを作成
-    activate P
-    P -> P : 初期化
-    deactivate P
+        Game -> D : ディーラーを作成
+        activate D
+        D -> D : 初期化
+        deactivate D
 
-    Game -> C : CPUを作成
-    activate C
-    C -> C : 初期化
-    deactivate C
+        Game -> P : プレイヤーを作成
+        activate P
+        P -> P : 初期化
+        deactivate P
 
-    Game -> C : CPU手札を取得
-    activate C
-    C -> Deck : カードを2枚とる
-    activate Deck
-    Deck --> C : カードを2枚返す
-    deactivate Deck
-    C -> C : 合計点を更新する
-    C --> Game : CPU手札
-    deactivate C
+    Game -> Game : メッセージを表示
+        deactivate Game
 
-    Game -> P : プレイヤー手札を取得
-    activate P
-    P -> Deck : カードを2枚とる
-    activate Deck
-    Deck --> P : カードを2枚返す
-    deactivate Deck
-    P -> P : 合計点を更新する
-    P --> Game : プレイヤー手札
-    deactivate P
+        note right Game
+            プレイヤーの人数(1人~3人)を選択してください(1~3の数値を入力)
+            ブラックジャックを開始します。
+        end note
 
-    Game -> D : ディーラー手札を取得
-    activate D
-    D -> Deck : カードを2枚とる
-    activate Deck
-    Deck  --> D : カードを2枚返す
-    deactivate Deck
-    D -> D : 合計点を更新する
-    D --> Game : ディーラー手札
-    deactivate D
+        Game -> C : CPUを作成
+        activate C
+        C -> C : 初期化
+        deactivate C
 
-    Game -> Game : メッセージを返す
-    deactivate Game
+        Game -> C : CPU手札を取得
+        activate C
+        C -> Deck : カードを2枚とる
+        activate Deck
+        Deck --> C : カードを2枚返す
+        deactivate Deck
+        C -> C : 合計点を更新する
+        C --> Game : CPU手札
+        deactivate C
 
-    note right Game
-        ブラックジャックを開始します。
+        Game -> P : プレイヤー手札を取得
+        activate P
+        P -> Deck : カードを2枚とる
+        activate Deck
+        Deck --> P : カードを2枚返す
+        deactivate Deck
+        P -> P : 合計点を更新する
+        P --> Game : プレイヤー手札
+        deactivate P
 
-        あなたの引いたカードはハートの7です。
-        あなたの引いたカードはクラブの8です。
+        Game -> D : ディーラー手札を取得
+        activate D
+        D -> Deck : カードを2枚とる
+        activate Deck
+        Deck  --> D : カードを2枚返す
+        deactivate Deck
+        D -> D : 合計点を更新する
+        D --> Game : ディーラー手札
+        deactivate D
 
-        CPUの引いたカードはハートの3です。
-        CPUの引いたカードはスペードの10です。
+        Game -> Game : メッセージを返す
+        deactivate Game
 
-        ディーラーの引いたカードはダイヤのQです。
-        ディーラーの引いた2枚目のカードはわかりません。
+        note right Game
+            ブラックジャックを開始します。
 
-        あなたの現在の得点は15です。カードを引きますか？（y/N）
-    end note
+            あなたの引いたカードはハートの7です。
+            あなたの引いたカードはクラブの8です。
+
+            CPUの引いたカードはハートの3です。
+            CPUの引いたカードはスペードの10です。
+
+            ディーラーの引いたカードはダイヤのQです。
+            ディーラーの引いた2枚目のカードはわかりません。
+
+            あなたの現在の得点は15です。カードを引きますか？（y/N）
+        end note
+    end
 
 
-    alt プレイヤーのターン
-        loop  while 'y'
-            Game -> P : プレイヤー手札を取得
-            activate P
-            P -> Deck : カードを1枚とる
-            activate Deck
-            Deck --> P : カードを1枚返す
-            deactivate Deck
-            P -> P : 合計点を更新する
-            P --> Game : プレイヤー手札
-            deactivate P
+alt #FFDDCC プレイヤーのターン
+    loop  while 'y'
+        Game -> P : プレイヤー手札を取得
+        activate P
+        P -> Deck : カードを1枚とる
+        activate Deck
+        Deck --> P : カードを1枚返す
+        deactivate Deck
+        P -> P : 合計点を更新する
+        P --> Game : プレイヤー手札
+        deactivate P
 
+        Game -> Game : メッセージを返す
+        deactivate Game
+
+        note right Game
+            あなたの引いたカードはスペードの５です。
+        end note
+
+        alt 合計が21以内の場合
             Game -> Game : メッセージを返す
             deactivate Game
-
             note right Game
-                あなたの引いたカードはスペードの５です。
+                あなたの現在の得点は20です。カードを引きますか？（y/N）
             end note
 
-            alt 合計が21以内の場合
-                Game -> Game : メッセージを返す
-                deactivate Game
-                note right Game
-                    あなたの現在の得点は20です。カードを引きますか？（y/N）
-                end note
-
-            else 合計が21を超えた場合
-                Game -> Game : メッセージを返す
-                deactivate Game
-                note right Game #FFAAAA
-                    あなたの現在の得点は22です。バーストしました。
-                    残念！あなたの負けです。
-                end note
-                Game -> Game : ゲームを終了する
-                deactivate Game
-            end
+        else 合計が21を超えた場合
+            Game -> Game : メッセージを返す
+            deactivate Game
+            note right Game #FFAAAA
+                あなたの現在の得点は22です。バーストしました。
+                残念！あなたの負けです。
+            end note
+            Game -> Game : ゲームを終了する
+            deactivate Game
         end
+    end
 
-    else CPUのターン
+    else #FFCCCC CPUのターン
         loop while 合計17以上になるまで
             Game -> C : CPU手札を取得
             activate C
@@ -146,7 +158,7 @@ group ゲームの開始
             end note
         end
 
-    else ディーラーのターン
+    else #FFCCCC ディーラーのターン
         Game -> Game : メッセージを返す
         deactivate Game
         note right Game
@@ -175,44 +187,37 @@ group ゲームの開始
         end
     end
 
-    group 勝敗判定
-        Game -> HandJudger : HandJudgerを作成する
+    group #FEBBCC 勝敗判定
 
-        Game -> Game : メッセージを返す
+        Game -> Game : 得点発表メッセージを返す
         deactivate Game
         note right Game
-            〇判定結果〇
-            あなたの得点は20です。
-            CPUの得点は18です。
+            〇得点発表〇
             ディーラーの得点は17です。
+            あなたの得点は17です。
+            CPUプレイヤー1の得点は18です。
         end note
 
-        Game -> HandJudger : 勝者を取得
+        Game -> HandJudger : 結果を取得
         activate HandJudger
-        HandJudger --> Game : 勝者をを返す
+        HandJudger --> Game : 結果をを返す
         deactivate HandJudger
 
+        Game -> Game : 結果発表メッセージを返す
+        deactivate Game
+        note right Game
+            〇結果発表〇
+            あなたは引き分けです。
+            CPUプレイヤー1の勝ちです。
+        end note
 
-        alt
-            note right Game
-                あなたの勝ちです！
-            end note
-        else
-            note right Game
-                同点でした。この勝負は引き分けとします。
-            end note
-        else
-            note right Game
-                ディーラーの勝ちです。残念！
-            end note
-        end
-
-        note right Game #FFAAAA
+        Game -> Game : 終了メッセージを返す
+        deactivate Game
+        note right Game
             ブラックジャックを終了します。
         end note
 
         Game -> Game : ゲームを終了する
     end
 end
-
 @enduml

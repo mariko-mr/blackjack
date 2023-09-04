@@ -1,95 +1,103 @@
 @startuml blackjack
 
-BlackjackGame --> GameParticipant
+BlackjackGame -> Participant
 BlackjackGame --> Deck
-BlackjackGame ----> Rule
 BlackjackGame --> Message
+BlackjackGame --> Validator
 BlackjackGame --> HandJudger
 
-Message --> Validator
+Participant <|-- HumPlayer
+Participant <|-- CpuPlayer
+Participant <|-- Dealer
 
-GameParticipant <|-- Player
-GameParticipant <|-- Dealer
-Player <|-- PlayerManual
-Player <|-- PlayerAuto
+HumPlayer ---> Deck
+CpuPlayer ---> Deck
+Dealer ---> Deck
 
-
-PlayerManual -- Deck
-PlayerAuto -- Deck
-Dealer -- Deck
 Deck *-- Card
 
-GameParticipant -- RuleAce
-Player -- RulePlayer
-Dealer -- RuleDealer
+Validator --> Message
 
-Rule <|.. RuleAce
-Rule <|.. RuleDealer
-Rule <|.. RulePlayer
+HumPlayer ---> AceRule
+HumPlayer ---> HumPlayerRule
+
+CpuPlayer ---> AceRule
+CpuPlayer ---> CpuPlayerRule
+
+Dealer ---> AceRule
+Dealer ---> DealerRule
+
+NonHumPlayerRule <|-- CpuPlayerRule
+NonHumPlayerRule <|-- DealerRule
+
+ParticipantRule <|-- HumPlayerRule
+ParticipantRule <|-- CpuPlayerRule
+ParticipantRule <|-- DealerRule
+
 
 skinparam classAttributeIconSize 0
+skinparam groupInheritance 3
 
+' ブラックジャックゲーム
 class BlackjackGame {
     -const DRAW_TWO
     -const DRAW_ONE
-    +__construct(Deck, Player, Dealer, HandJudger)
-    +startGame(): void
-    -playerTurn(): void
+    -array $cpuPlayers
+    +__construct()
+    +playGame(): void
+    -setupGame(): void
+    -startGame(): void
+    -playerTurn(): string
+    -cpuTurn(): void
     -dealerTurn(): void
     -showDown(): void
+    -quitGame(): void
 }
 
-abstract GameParticipant {
+' 参加者
+abstract Participant {
+    +__construct()
+    +drawCards(): void
+    +getCards(): array
+    +getTotalScore(): int
+    +isBust(): bool
+    #updateTotalScore(): int
+}
+
+class HumPlayer {
     -array $playerCards
     -int $playerTotalScore
-    -int $$aceReductionCount
     +__construct()
-    +drawCards(): array
+    +drawCards(): void
+    +getCards(): array
     +getTotalScore(): int
-    -updateTotalScore(): int
-    -hasAce(): int
-    -reduceScoreWithAce(): int
-}
-
-class Player {
-}
-
-class PlayerManual {
-    -array $playerCards
-    -int $playerTotalScore
-    -int $$aceReductionCount
-    +__construct()
-    +drawCards(): array
-    +getTotalScore(): int
-    -updateTotalScore(): int
-    -hasAce(): int
-    -reduceScoreWithAce(): int
-}
-
-class PlayerAuto {
-    -array $playerCards
-    -int $playerTotalScore
-    -int $$aceReductionCount
-    +__construct()
-    +drawCards(): array
-    +getTotalScore(): int
-    -updateTotalScore(): int
-    -hasAce(): int
-    -reduceScoreWithAce(): int
+    +isBust(): bool
+    #updateTotalScore(): int
 }
 
 class Dealer {
-    -array $dealerCards
-    -int $dealerTotalScore
-    -int $$aceReductionCount
+    -array $playerCards
+    -int $playerTotalScore
     +__construct()
-    +drawCards(): array
+    +drawCards(): void
+    +getCards(): array
     +getTotalScore(): int
-    -updateTotalScore(): int
-    -hasAce(): int
-    -reduceScoreWithAce(): int
+    +isBust(): bool
+    #updateTotalScore(): int
 }
 
+class CpuPlayer {
+    -array $playerCards
+    -int $playerTotalScore
+    +__construct()
+    +drawCards(): void
+    +getCards(): array
+    +getTotalScore(): int
+    +isBust(): bool
+    #updateTotalScore(): int
+}
+
+' デッキ
 class Deck {
     -const SUITS
     -const CARD_NUM_AND_SCORES
@@ -98,34 +106,70 @@ class Deck {
     +drawCards(): array
 }
 
+' カード
 class Card {
-    +__construct($suit, $number, $score)
+    +__construct()
     +getSuit(): string
     +getNumber(): string
     +getScore(): int
 }
 
-interface Rule {
+' ルールクラス
+interface ParticipantRule{
+    +const TOTAL_SCORE_21
+    +isBust(): bool
 }
 
-class RuleAce{
+interface NonHumPlayerRule{
+    +const TOTAL_SCORE_17
+    +shouldDrawCard(): bool
 }
 
+class HumPlayerRule {
+    +isBust(): bool
+}
+
+class DealerRule {
+    +isBust(): bool
+    +shouldDrawCard(): bool
+}
+
+class CpuPlayerRule {
+    +isBust(): bool
+    +shouldDrawCard(): bool
+}
+
+class AceRule{
+    +subtractAceScore(): int
+    -countAce(): int
+}
+
+' 結果
 class HandJudger {
-    +determineWinner(): string
+    +determineWinner(): array
+    -isTie(): bool
+    -isHigherScore(): bool
 }
 
+' メッセージ
 class Message {
-    -showStartMsg(): void
-    -showPlayerMsg(): void
-    -showDealerMsg(): void
-    -showDealerDrawnMsg(): void
-
+    +showSetupMsg(): void
+    +showStartMsg(): void
+    +showPlayerTurnMsg(): void
+    +showCpuDrawnMsg(): void
+    +showDealerTurnMsg(): void
+    +showDealerDrawnMsg(): void
+    +showTotalScoreMsg(): void
+    +showJudgmentMsg(): void
+    +showExitMsg(): void
+    +showValidateYesNoErrorMsg(): void
+    +showValidateNumberErrorMsg(): void
 }
 
+' バリデーター
 class Validator {
-    -validateInput(): string
+    +validateYesNoAnswer(): string
+    +validateNumberAnswer(): string
 }
-
 
 @enduml
