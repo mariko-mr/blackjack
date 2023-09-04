@@ -2,6 +2,7 @@
 
 namespace Blackjack\Participants;
 
+require_once(__DIR__ . '/../Participants/Participant.php');
 require_once(__DIR__ . '/../Rule/CpuPlayerRule.php');
 require_once(__DIR__ . '/../Rule/AceRule.php');
 
@@ -10,7 +11,7 @@ use Blackjack\Rule\AceRule;
 use Blackjack\Deck;
 use Blackjack\Card;
 
-class CpuPlayer
+class CpuPlayer extends Participant
 {
     /** @var Card[] CPUプレイヤーの持ち札 */
     private array $cpuCards;
@@ -93,7 +94,7 @@ class CpuPlayer
      * @param  Card[] $cpuCards
      * @return int
      */
-    private function updateTotalScore(array $cpuCards): int
+    protected function updateTotalScore(array $cpuCards): int
     {
         $this->cpuTotalScore = 0;
 
